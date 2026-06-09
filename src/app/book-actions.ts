@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computePricing } from "@/lib/pricing";
-import { SLOTS, ZONE_NAMES } from "@/lib/slots";
+import { SLOTS } from "@/lib/slots";
 
 const DEAD = ["cancelled", "no_show"];
 const VALID_SLOTS: string[] = SLOTS.map((s) => s.value);
@@ -13,6 +13,7 @@ export type Zone = {
   name: string;
   seated: number | null;
   reception: number | null;
+  photo: string | null;
 };
 
 export type Availability = {
@@ -21,23 +22,28 @@ export type Availability = {
   taken: string[];
 };
 
-/** Zones + which (zone, slot) pairs are already booked for a given date. */
+/**
+ * Zones (every active space — unlimited) + which (zone, slot) pairs are already
+ * booked for a given date. Add a zone simply by adding an active space in the
+ * admin Zones page and it appears here automatically.
+ */
 export async function getAvailability(date: string): Promise<Availability> {
   const supabase = createAdminClient();
 
   const { data: spaces } = await supabase
     .from("spaces")
-    .select("id, name, seated_cap, standing_cap")
-    .in("name", ZONE_NAMES as unknown as string[]);
+    .select("id, name, seated_cap, standing_cap, photo_url, sort_order")
+    .eq("active", true)
+    .order("sort_order")
+    .order("name");
 
-  const zones: Zone[] = (ZONE_NAMES as unknown as string[])
-    .map((name) => {
-      const s = (spaces ?? []).find((x) => x.name === name);
-      return s
-        ? { id: s.id, name: s.name, seated: s.seated_cap, reception: s.standing_cap }
-        : null;
-    })
-    .filter((z): z is Zone => z !== null);
+  const zones: Zone[] = (spaces ?? []).map((s) => ({
+    id: s.id,
+    name: s.name,
+    seated: s.seated_cap,
+    reception: s.standing_cap,
+    photo: s.photo_url,
+  }));
 
   const ids = zones.map((z) => z.id);
   let taken: string[] = [];

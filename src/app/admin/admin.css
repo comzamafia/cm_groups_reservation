@@ -137,6 +137,9 @@
 .icon-btn { background: transparent; border: 1px solid var(--line); color: var(--sub); width: 32px; height: 32px; border-radius: 6px; display: grid; place-items: center; transition: all .2s; }
 .icon-btn:hover { border-color: #e0795b; color: #e0795b; }
 
+/* ── Zone thumbnail ── */
+.zone-thumb { width: 56px; height: 40px; border-radius: 6px; background-size: cover; background-position: center; background-color: #2c2722; border: 1px solid var(--line); }
+
 /* ── Analytics ── */
 .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 860px) { .analytics-grid { grid-template-columns: 1fr; } }

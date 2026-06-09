@@ -38,7 +38,6 @@ export function BookingModal({ open, onClose }: { open: boolean; onClose: () => 
   const [form, setForm] = useState({ first: "", last: "", phone: "", email: "", occasion: "", request: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-  const [minSpend, setMinSpend] = useState(0);
 
   const load = useCallback(async (d: string) => {
     setLoading(true);
@@ -97,7 +96,6 @@ export function BookingModal({ open, onClose }: { open: boolean; onClose: () => 
     });
     setSubmitting(false);
     if (res.ok) {
-      setMinSpend(res.minSpend);
       setStep("success");
     } else {
       setError(res.error);
@@ -161,6 +159,11 @@ export function BookingModal({ open, onClose }: { open: boolean; onClose: () => 
                 <div className="bk-zones">
                   {zones.map((z) => (
                     <div className="bk-zone" key={z.id}>
+                      <div
+                        className={`bk-zone-img ${z.photo ? "" : "noimg"}`}
+                        style={z.photo ? { backgroundImage: `url(${z.photo})` } : undefined}
+                        aria-hidden="true"
+                      />
                       <div className="bk-zone-head">
                         <span className="bk-zone-name">{z.name}</span>
                         <span className="bk-zone-cap">
@@ -191,7 +194,7 @@ export function BookingModal({ open, onClose }: { open: boolean; onClose: () => 
                 </div>
               )}
               <p className="bk-fineprint">
-                <Icon name="Info" size={13} /> Slots already reserved are greyed out. Minimum spend is calculated at the next step.
+                <Icon name="Info" size={13} /> Slots already reserved are greyed out — pick an available time to continue.
               </p>
             </>
           )}
@@ -250,10 +253,6 @@ export function BookingModal({ open, onClose }: { open: boolean; onClose: () => 
                 Thank you, {form.first}. We&apos;ve confirmed {zone.name} for {party} on {prettyDate(date)} at {slotLabel(time)}.
                 A confirmation is on its way to {form.email}.
               </p>
-              <div className="bk-summary center">
-                <span>Minimum spend</span>
-                <strong style={{ color: "var(--gold)" }}>${minSpend.toLocaleString()}</strong>
-              </div>
               <button type="button" className="bk-submit" onClick={close}>Done</button>
             </div>
           )}
