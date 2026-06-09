@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
-import { BookingForm } from "./BookingForm";
+import { BookingModal } from "./BookingModal";
+import { EventInquiryModal } from "./EventInquiryModal";
 
 /* ───────────────────────── Data ───────────────────────── */
 const SPACES = [
@@ -135,7 +136,7 @@ function Reveal({
 }
 
 /* ───────────────────────── Nav ───────────────────────── */
-function Nav() {
+function Nav({ onBookTable }: { onBookTable: () => void }) {
   const [solid, setSolid] = useState(false);
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 40);
@@ -158,7 +159,7 @@ function Nav() {
           <a href="#spaces" onClick={go("spaces")}>Spaces</a>
           <a href="#menus" onClick={go("menus")}>Menus</a>
           <a href="#story" onClick={go("story")}>The Venue</a>
-          <a href="#inquire" onClick={go("inquire")} className="nav-cta">Inquire Now</a>
+          <button type="button" className="nav-cta" onClick={onBookTable}>Book a Table</button>
         </nav>
       </div>
     </header>
@@ -166,7 +167,7 @@ function Nav() {
 }
 
 /* ───────────────────────── Hero ───────────────────────── */
-function Hero() {
+function Hero({ onBookTable, onBookEvent }: { onBookTable: () => void; onBookEvent: () => void }) {
   return (
     <section className="hero" id="top">
       <div className="hero-img" style={{ backgroundImage: `url(/assets/bar-dining-room.jpg)` }} />
@@ -186,12 +187,12 @@ function Hero() {
           murals, candlelight and a kitchen built for a crowd.
         </p>
         <div className="hero-actions line line-4">
-          <a href="#inquire" className="btn-gold" onClick={(e) => { e.preventDefault(); scrollToId("inquire"); }}>
-            Inquire Now <Icon name="ArrowRight" size={18} />
-          </a>
-          <a href="#spaces" className="btn-outline" onClick={(e) => { e.preventDefault(); scrollToId("spaces"); }}>
-            Explore the Spaces
-          </a>
+          <button type="button" className="btn-gold" onClick={onBookTable}>
+            Book a Table <Icon name="ArrowRight" size={18} />
+          </button>
+          <button type="button" className="btn-outline" onClick={onBookEvent}>
+            Book an Event
+          </button>
         </div>
       </div>
       <div className="hero-foot line line-5">
@@ -236,7 +237,7 @@ function Story() {
 }
 
 /* ───────────────────── Spaces ───────────────────── */
-function Spaces() {
+function Spaces({ onBookTable }: { onBookTable: () => void }) {
   return (
     <section className="spaces" id="spaces">
       <div className="section-head">
@@ -261,8 +262,8 @@ function Spaces() {
                 <span><Icon name="Users" size={15} /> Reception {s.reception}</span>
               </div>
               <p className="space-desc">{s.desc}</p>
-              <button type="button" className="link-arrow" onClick={() => scrollToId("inquire")}>
-                View details <Icon name="ArrowRight" size={15} />
+              <button type="button" className="link-arrow" onClick={onBookTable}>
+                Book this space <Icon name="ArrowRight" size={15} />
               </button>
             </div>
           </Reveal>
@@ -316,17 +317,17 @@ function Menus() {
   );
 }
 
-/* ───────────────────── Inquire ───────────────────── */
-function Inquire() {
+/* ───────────────────── Reserve (CTA, no inline form) ───────────────────── */
+function Reserve({ onBookTable, onBookEvent }: { onBookTable: () => void; onBookEvent: () => void }) {
   return (
     <section className="inquire" id="inquire">
-      <div className="inquire-grid">
-        <div className="inquire-aside">
-          <div className="kicker"><Flourish /><span>Begin Your Inquiry</span></div>
+      <div className="reserve-grid">
+        <div>
+          <div className="kicker"><Flourish /><span>Reserve Your Evening</span></div>
           <h2 className="h2">Let&apos;s plan something<br />worth remembering.</h2>
           <p className="lead">
-            Share a few details and our events team will be in touch within one
-            business day to start designing your evening.
+            Book a table in any of our three zones in seconds, or start an inquiry
+            for a larger private event — our team will take it from there.
           </p>
           <ul className="contact-list">
             <li><span className="ci"><Icon name="Mail" size={16} /></span><a href="mailto:events@chiangmai.ca">events@chiangmai.ca</a></li>
@@ -335,8 +336,20 @@ function Inquire() {
             <li><span className="ci"><Icon name="Clock" size={16} /></span>Events team · Mon–Fri, 10–6</li>
           </ul>
         </div>
-        <div className="form-shell">
-          <BookingForm spaces={SPACES.map((s) => ({ name: s.name }))} />
+
+        <div className="reserve-cards">
+          <button type="button" className="reserve-card primary" onClick={onBookTable}>
+            <Icon name="CalendarCheck" size={26} />
+            <span className="reserve-card-title">Book a Table</span>
+            <span className="reserve-card-sub">Pick a zone &amp; time — instantly confirmed.</span>
+            <span className="reserve-card-go">Choose a time <Icon name="ArrowRight" size={16} /></span>
+          </button>
+          <button type="button" className="reserve-card" onClick={onBookEvent}>
+            <Icon name="Sparkles" size={26} />
+            <span className="reserve-card-title">Book an Event</span>
+            <span className="reserve-card-sub">Large parties &amp; full buyouts — send an inquiry.</span>
+            <span className="reserve-card-go">Start inquiry <Icon name="ArrowRight" size={16} /></span>
+          </button>
         </div>
       </div>
     </section>
@@ -385,17 +398,25 @@ function Footer() {
 
 /* ───────────────────── Page ───────────────────── */
 export function EventsLanding() {
+  const [tableOpen, setTableOpen] = useState(false);
+  const [eventOpen, setEventOpen] = useState(false);
+  const openTable = () => setTableOpen(true);
+  const openEvent = () => setEventOpen(true);
+
   return (
     <>
-      <Nav />
+      <Nav onBookTable={openTable} />
       <main>
-        <Hero />
+        <Hero onBookTable={openTable} onBookEvent={openEvent} />
         <Story />
-        <Spaces />
+        <Spaces onBookTable={openTable} />
         <Menus />
-        <Inquire />
+        <Reserve onBookTable={openTable} onBookEvent={openEvent} />
       </main>
       <Footer />
+
+      <BookingModal open={tableOpen} onClose={() => setTableOpen(false)} />
+      <EventInquiryModal open={eventOpen} onClose={() => setEventOpen(false)} />
     </>
   );
 }
