@@ -1,32 +1,27 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter, IBM_Plex_Sans_Thai } from "next/font/google";
+import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 
-// Brand-aligned web fallbacks:
-// Amandine (heading) → Cormorant Garamond (elegant display serif)
-// New Oder (body)    → Inter (clean sans)
-// Thai support       → IBM Plex Sans Thai
-const heading = Cormorant_Garamond({
-  variable: "--font-heading-stack",
+// Design fonts (from the handoff):
+//   Headings → Playfair Display (serif)
+//   Body     → Inter (sans)
+const playfair = Playfair_Display({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-const body = Inter({
-  variable: "--font-body-stack",
-  subsets: ["latin"],
-});
-
-const thai = IBM_Plex_Sans_Thai({
-  variable: "--font-thai-stack",
-  subsets: ["thai", "latin"],
-  weight: ["300", "400", "500", "600"],
-});
-
 export const metadata: Metadata = {
-  title: "Chiang Mai Thai Dining — Group Party & Events",
+  title: "Chiang Mai · Private Dining & Group Events",
   description:
-    "Book private dining, semi-private nooks, and full event spaces at Chiang Mai Thai Dining.",
+    "Celebrate your most memorable moments inside our modern Thai dining room — murals, candlelight and a kitchen built for a crowd. Private dining for 2–180 guests in Mississauga.",
 };
 
 export default function RootLayout({
@@ -35,11 +30,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${heading.variable} ${body.variable} ${thai.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={`${playfair.variable} ${inter.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }
