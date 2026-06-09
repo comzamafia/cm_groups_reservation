@@ -1,0 +1,107 @@
+/* Chiang Mai Thai Dining — Group Party Reservation System
+ * Brand design tokens. Import this and reference the variables instead of
+ * hardcoding hex values in components. Brand colors are FULL TONE only —
+ * never apply opacity, lighten, or darken them.
+ */
+
+:root {
+  /* --- Brand primaries (full tone only) --- */
+  --cm-night-purple: #440E48; /* primary: premium, mysterious */
+  --cm-gold:         #F4A626; /* gold/yellow accent */
+  --cm-red-brown:    #9F4000; /* earthy secondary accent */
+
+  /* --- Functional greys (UI / text) --- */
+  --cm-ink:        #140516; /* near-black, primary text */
+  --cm-grey-900:   #433745;
+  --cm-grey-600:   #726973;
+  --cm-grey-400:   #A19BA2;
+  --cm-grey-200:   #D0CDD0; /* borders / dividers */
+
+  /* --- Surfaces --- */
+  --cm-cream:      #FAF7F2; /* off-white / cream canvas */
+  --cm-surface:    #FFFFFF; /* card surface */
+
+  /* --- Location accent colors --- */
+  --cm-sky-mountain:      #1DBA87;
+  --cm-sky-mountain-dark: #09473A;
+  --cm-parklawn:          #FABC3A;
+  --cm-parklawn-dark:     #E57037;
+  --cm-liberty-village:   #835D19;
+  --cm-danforth:          #943B13;
+
+  /* --- Semantic roles --- */
+  --cm-bg:           var(--cm-cream);
+  --cm-text:         var(--cm-ink);
+  --cm-text-muted:   var(--cm-grey-600);
+  --cm-border:       var(--cm-grey-200);
+  --cm-accent:       var(--cm-night-purple);
+  --cm-accent-warm:  var(--cm-gold);
+
+  /* --- Typography ---
+   * Amandine → headings/brand; New Oder → body; IBM Plex Sans Thai → Thai.
+   * Fallback stacks used when the licensed faces aren't web-embedded.
+   */
+  --cm-font-heading: "Amandine", "Cormorant Garamond", Georgia, serif;
+  --cm-font-body:    "New Oder", "Inter", "Helvetica Neue", Arial,
+                     "IBM Plex Sans Thai", sans-serif;
+  --cm-font-thai:    "IBM Plex Sans Thai", "New Oder", sans-serif;
+
+  /* --- Spacing scale (4px base) --- */
+  --cm-space-1: 4px;
+  --cm-space-2: 8px;
+  --cm-space-3: 12px;
+  --cm-space-4: 16px;
+  --cm-space-6: 24px;
+  --cm-space-8: 32px;
+  --cm-space-12: 48px;
+
+  /* --- Radii & elevation (restrained, premium) --- */
+  --cm-radius-sm: 6px;
+  --cm-radius-md: 12px;
+  --cm-radius-lg: 20px;
+  --cm-shadow-card: 0 6px 24px rgba(20, 5, 22, 0.08);
+
+  /* --- Minimum touch target (mobile-first) --- */
+  --cm-tap-min: 44px;
+}
+
+/* Baseline application */
+body {
+  background: var(--cm-bg);
+  color: var(--cm-text);
+  font-family: var(--cm-font-body);
+}
+
+h1, h2, h3, h4, .cm-heading {
+  font-family: var(--cm-font-heading);
+  color: var(--cm-ink);
+}
+
+/* Primary action — brand accent, full tone */
+.cm-btn-primary {
+  background: var(--cm-accent);
+  color: #fff;
+  font-family: var(--cm-font-body);
+  border: none;
+  border-radius: var(--cm-radius-md);
+  min-height: var(--cm-tap-min);
+  padding: var(--cm-space-3) var(--cm-space-6);
+  cursor: pointer;
+}
+
+.cm-btn-secondary {
+  background: var(--cm-accent-warm);
+  color: var(--cm-ink);
+  border-radius: var(--cm-radius-md);
+  min-height: var(--cm-tap-min);
+  padding: var(--cm-space-3) var(--cm-space-6);
+}
+
+/* Space card — image-led, atomic metadata */
+.cm-space-card {
+  background: var(--cm-surface);
+  border: 1px solid var(--cm-border);
+  border-radius: var(--cm-radius-lg);
+  box-shadow: var(--cm-shadow-card);
+  overflow: hidden;
+}
