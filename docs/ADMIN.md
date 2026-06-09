@@ -5,9 +5,13 @@ It lets the events team manage the inquiries (leads) captured from the website
 and the reservations on a central calendar.
 
 ## 1. Apply the new migrations
-In the Supabase SQL editor, run (if you haven't already):
-- `supabase/migrations/0003_seed_reservations.sql` — sample bookings so the
-  calendar has data this month (idempotent; safe to re-run).
+In the Supabase SQL editor, run (if you haven't already), in order:
+- `0003_seed_reservations.sql` — sample bookings so the calendar has data this
+  month (idempotent).
+- `0004_seed_pricing.sql` — dynamic pricing rules for each space × shift
+  (idempotent).
+- `0005_enable_realtime.sql` — adds `leads` + `reservations` to the
+  `supabase_realtime` publication so the console gets live notifications.
 
 The auth + staff tables already exist from `0001_init_schema.sql`.
 
@@ -33,9 +37,22 @@ Go to `/admin/login`, sign in, and you'll land on the dashboard.
 - **Dashboard** — counts of new/total leads and reservations, plus the latest
   inquiries with quick status changes.
 - **Leads** — every website inquiry; filter by status; change status
-  (new → contacted → won/lost). Contact links to email/phone.
+  (new → contacted → won/lost). Contact links to email/phone. **Convert** turns
+  a lead into a confirmed reservation: pick space/date/time/guests and the
+  minimum spend is computed automatically by the pricing engine; the lead is
+  marked "won".
 - **Reservations** — a month calendar (Module 4) with venue / space / status
   filters and an agenda list; change booking status inline.
+- **Pricing** — manage dynamic minimum-spend rules (Module 3) by space, shift,
+  season and party size, with terms and cancellation policy. The convert flow
+  reads these to price a booking (highest matching minimum wins; falls back to
+  the space's base minimum).
+
+## Live notifications (Realtime)
+Once `0005_enable_realtime.sql` is applied, the console subscribes to new leads
+and reservations and shows a toast + auto-refreshes — no manual reload needed.
+If toasts don't appear, confirm Realtime is enabled for those tables in
+Supabase → Database → Replication.
 
 ## How access is enforced
 - `src/middleware.ts` refreshes the Supabase session and redirects

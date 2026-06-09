@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { StatusSelect } from "@/components/admin/StatusSelect";
 import { FilterSelect } from "@/components/admin/FilterSelect";
+import { ConvertLead } from "@/components/admin/ConvertLead";
 import type { Lead } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -40,8 +41,12 @@ export default async function LeadsPage({
     .order("created_at", { ascending: false });
   if (status) query = query.eq("status", status);
 
-  const { data } = await query;
+  const [{ data }, spacesRes] = await Promise.all([
+    query,
+    supabase.from("spaces").select("id, name").eq("active", true).order("name"),
+  ]);
   const leads = (data ?? []) as Lead[];
+  const spaces = spacesRes.data ?? [];
 
   return (
     <>
@@ -71,12 +76,13 @@ export default async function LeadsPage({
                 <th>Guests</th>
                 <th>Details</th>
                 <th>Status</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {leads.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="tbl-empty">
+                  <td colSpan={7} className="tbl-empty">
                     No leads{status ? ` with status “${status}”` : ""} yet.
                   </td>
                 </tr>
@@ -103,6 +109,15 @@ export default async function LeadsPage({
                   </td>
                   <td>
                     <StatusSelect kind="lead" id={l.id} value={l.status} />
+                  </td>
+                  <td>
+                    <ConvertLead
+                      leadId={l.id}
+                      leadStatus={l.status}
+                      defaultDate={l.requested_date}
+                      defaultParty={l.party_size}
+                      spaces={spaces}
+                    />
                   </td>
                 </tr>
               ))}

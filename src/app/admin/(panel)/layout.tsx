@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { SignOutButton } from "@/components/admin/SignOutButton";
+import { RealtimeNotifier } from "@/components/admin/RealtimeNotifier";
 import "../admin.css";
 
 export default async function PanelLayout({
@@ -63,6 +64,7 @@ export default async function PanelLayout({
         </div>
       </aside>
       <main className="admin-main">{children}</main>
+      <RealtimeNotifier />
     </div>
   );
 }
