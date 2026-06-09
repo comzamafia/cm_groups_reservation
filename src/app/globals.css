@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/* Chiang Mai Thai Dining brand tokens.
+ * Canonical source: .claude/skills/cm-groups-reservation/assets/brand-tokens.css
+ * Brand colors are FULL TONE only — never darken, lighten, or make transparent.
+ */
+:root {
+  /* Primary brand colors */
+  --cm-night-purple: #440E48;
+  --cm-gold: #F4A626;
+  --cm-red-brown: #9F4000;
+
+  /* Functional greys */
+  --cm-ink: #140516;
+  --cm-grey-900: #433745;
+  --cm-grey-600: #726973;
+  --cm-grey-400: #A19BA2;
+  --cm-grey-200: #D0CDD0;
+
+  /* Surfaces */
+  --cm-cream: #FAF7F2;
+  --cm-surface: #FFFFFF;
+
+  /* Location accents */
+  --cm-sky-mountain: #1DBA87;
+  --cm-sky-mountain-dark: #09473A;
+  --cm-parklawn: #FABC3A;
+  --cm-parklawn-dark: #E57037;
+  --cm-liberty-village: #835D19;
+  --cm-danforth: #943B13;
+
+  /* Semantic roles */
+  --background: var(--cm-cream);
+  --foreground: var(--cm-ink);
+}
+
+/* Map brand tokens into the Tailwind theme so utilities like
+ * bg-night-purple / text-ink / font-heading work in components. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-night-purple: var(--cm-night-purple);
+  --color-gold: var(--cm-gold);
+  --color-red-brown: var(--cm-red-brown);
+  --color-ink: var(--cm-ink);
+  --color-grey-900: var(--cm-grey-900);
+  --color-grey-600: var(--cm-grey-600);
+  --color-grey-400: var(--cm-grey-400);
+  --color-grey-200: var(--cm-grey-200);
+  --color-cream: var(--cm-cream);
+  --color-surface: var(--cm-surface);
+
+  --color-sky-mountain: var(--cm-sky-mountain);
+  --color-parklawn: var(--cm-parklawn);
+  --color-liberty-village: var(--cm-liberty-village);
+  --color-danforth: var(--cm-danforth);
+
+  /* Amandine → display serif fallback; New Oder → clean sans fallback */
+  --font-heading: var(--font-heading-stack);
+  --font-sans: var(--font-body-stack);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body-stack);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading-stack);
+  color: var(--cm-ink);
+}

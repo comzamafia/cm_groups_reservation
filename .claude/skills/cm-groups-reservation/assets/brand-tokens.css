@@ -1,33 +1,35 @@
 /* Chiang Mai Thai Dining — Group Party Reservation System
- * Brand design tokens. Import this and reference the variables instead of
- * hardcoding hex values in components. Brand colors are FULL TONE only —
- * never apply opacity, lighten, or darken them.
+ * Brand design tokens. Source: Brand Identity Guideline Version 1.0 (2024).
+ *
+ * Import this and reference the variables instead of hardcoding hex values in
+ * components. Brand colors are equal in status and must always appear at FULL
+ * TONE — they may not be darkened, lightened, or displayed transparently.
  */
 
 :root {
-  /* --- Brand primaries (full tone only) --- */
-  --cm-night-purple: #440E48; /* primary: premium, mysterious */
-  --cm-gold:         #F4A626; /* gold/yellow accent */
-  --cm-red-brown:    #9F4000; /* earthy secondary accent */
+  /* --- Primary brand colors (full tone only) --- */
+  --cm-night-purple: #440E48; /* RGB 68/14/72 — the primary brand color */
+  --cm-gold:         #F4A626; /* RGB 244/166/38 — yellow/gold */
+  --cm-red-brown:    #9F4000; /* RGB 159/64/0 */
 
-  /* --- Functional greys (UI / text) --- */
-  --cm-ink:        #140516; /* near-black, primary text */
-  --cm-grey-900:   #433745;
-  --cm-grey-600:   #726973;
-  --cm-grey-400:   #A19BA2;
-  --cm-grey-200:   #D0CDD0; /* borders / dividers */
+  /* --- Functional grey tones (for UI & applications) --- */
+  --cm-ink:        #140516; /* very dark purple/black — primary text */
+  --cm-grey-900:   #433745; /* dark grey */
+  --cm-grey-600:   #726973; /* medium grey */
+  --cm-grey-400:   #A19BA2; /* light grey */
+  --cm-grey-200:   #D0CDD0; /* very light grey — borders / dividers */
 
   /* --- Surfaces --- */
   --cm-cream:      #FAF7F2; /* off-white / cream canvas */
   --cm-surface:    #FFFFFF; /* card surface */
 
-  /* --- Location accent colors --- */
-  --cm-sky-mountain:      #1DBA87;
-  --cm-sky-mountain-dark: #09473A;
-  --cm-parklawn:          #FABC3A;
-  --cm-parklawn-dark:     #E57037;
-  --cm-liberty-village:   #835D19;
-  --cm-danforth:          #943B13;
+  /* --- Location-specific colors --- */
+  --cm-sky-mountain:      #1DBA87; /* green */
+  --cm-sky-mountain-dark: #09473A; /* dark green */
+  --cm-parklawn:          #FABC3A; /* yellow */
+  --cm-parklawn-dark:     #E57037; /* orange */
+  --cm-liberty-village:   #835D19; /* dark yellow */
+  --cm-danforth:          #943B13; /* dark orange */
 
   /* --- Semantic roles --- */
   --cm-bg:           var(--cm-cream);
