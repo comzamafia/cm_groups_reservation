@@ -59,12 +59,16 @@ export function AddZoneForm() {
       </label>
 
       <label className="field" style={{ gridColumn: "1 / -1" }}>
-        <span className="field-label">Photo URL</span>
+        <span className="field-label">Photo — upload an image</span>
+        <input name="photo_file" type="file" accept="image/jpeg,image/png,image/webp,image/avif" />
+      </label>
+      <label className="field" style={{ gridColumn: "1 / -1" }}>
+        <span className="field-label">…or paste a photo URL</span>
         <input name="photo_url" type="text" placeholder="/assets/your-zone.jpg or https://…" />
       </label>
 
       <button type="submit" className="btn-gold" disabled={busy} style={{ gridColumn: "1 / -1" }}>
-        {busy ? "Adding…" : "Add zone"}
+        {busy ? "Uploading…" : "Add zone"}
       </button>
     </form>
   );

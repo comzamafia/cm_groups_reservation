@@ -24,12 +24,25 @@ cannot pick them. Availability is re-fetched whenever the date changes.
   prices the booking via the pricing engine, and inserts a `confirmed`
   reservation (which then appears in the admin calendar and fires a realtime toast).
 
+## Managing zones (admin)
+`/admin/zones` lists every space and lets staff **add unlimited zones** (name,
+type, capacities, base min spend, photo), activate/deactivate, or delete. Any
+**active** zone appears in the public booking modal automatically — each with its
+photo shown above the name.
+
+Photos can be **uploaded** (stored in the public `zone-photos` Storage bucket via
+a server action using the service-role client) or supplied as a URL.
+
 ## Setup
 1. Seed the zones + their pricing (idempotent):
    ```bash
    node scripts/seed-zones.mjs
    ```
    (Or run `supabase/migrations/0006_public_zones.sql` in the SQL editor.)
+1b. Create the photo storage bucket (idempotent):
+   ```bash
+   node scripts/setup-storage.mjs
+   ```
 2. **Recommended:** apply the anti-double-booking index in the SQL editor:
    `supabase/migrations/0007_prevent_double_booking.sql`.
    The action guards races on its own, but this index is the hard guarantee.

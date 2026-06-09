@@ -2,8 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const TYPES = ["table", "semi_private", "private", "event"];
+
+/** Uploads an image to the public zone-photos bucket; returns its public URL. */
+async function uploadZonePhoto(file: File, zoneName: string): Promise<string> {
+  const admin = createAdminClient();
+  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const slug = zoneName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "zone";
+  const path = `zones/${Date.now()}-${slug}.${ext}`;
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  const { error } = await admin.storage
+    .from("zone-photos")
+    .upload(path, bytes, { contentType: file.type || "image/jpeg", upsert: false });
+  if (error) throw new Error(error.message);
+  return admin.storage.from("zone-photos").getPublicUrl(path).data.publicUrl;
+}
 
 function revalidate() {
   revalidatePath("/admin/zones");
@@ -36,6 +51,17 @@ export async function createZone(formData: FormData) {
     return v || null;
   };
 
+  // Prefer an uploaded image; otherwise fall back to a pasted URL.
+  let photoUrl = str("photo_url");
+  const file = formData.get("photo_file");
+  if (file && typeof file !== "string" && file.size > 0) {
+    try {
+      photoUrl = await uploadZonePhoto(file, name);
+    } catch (e) {
+      return { ok: false, error: `Image upload failed: ${(e as Error).message}` };
+    }
+  }
+
   const { error } = await supabase.from("spaces").insert({
     location_id: loc?.id ?? null,
     name,
@@ -43,7 +69,7 @@ export async function createZone(formData: FormData) {
     seated_cap: num("seated_cap", null),
     standing_cap: num("standing_cap", null),
     base_min_spend: num("base_min_spend", 0),
-    photo_url: str("photo_url"),
+    photo_url: photoUrl,
     active: true,
     sort_order: num("sort_order", 0),
   });
