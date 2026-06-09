@@ -137,6 +137,25 @@
 .icon-btn { background: transparent; border: 1px solid var(--line); color: var(--sub); width: 32px; height: 32px; border-radius: 6px; display: grid; place-items: center; transition: all .2s; }
 .icon-btn:hover { border-color: #e0795b; color: #e0795b; }
 
+/* ── Content editor ── */
+.content-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+.content-ok { color: #86efac; font-size: 0.88rem; }
+.content-err { color: #e0795b; font-size: 0.88rem; }
+.content-grid { padding: 18px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.content-field { display: flex; flex-direction: column; gap: 7px; }
+.content-field .field-label { color: var(--sub); }
+.content-field input[type="text"], .content-field textarea {
+  background: #141210; border: 1px solid var(--line); color: var(--text); border-radius: 6px;
+  padding: 10px 12px; font: inherit; outline: none; transition: border-color .2s;
+}
+.content-field input[type="text"]:focus, .content-field textarea:focus { border-color: var(--gold); }
+.content-field textarea { resize: vertical; line-height: 1.5; }
+.content-field input[type="file"] { color: var(--sub); font-size: 0.82rem; }
+.content-img { display: flex; gap: 12px; align-items: flex-start; }
+.content-img-preview { width: 96px; height: 64px; flex-shrink: 0; border-radius: 6px; background-size: cover; background-position: center; background-color: #2c2722; border: 1px solid var(--line); }
+.content-img-controls { display: grid; gap: 8px; flex: 1; min-width: 0; }
+@media (max-width: 760px) { .content-grid { grid-template-columns: 1fr; } }
+
 /* ── Zone thumbnail ── */
 .zone-thumb { width: 56px; height: 40px; border-radius: 6px; background-size: cover; background-position: center; background-color: #2c2722; border: 1px solid var(--line); }
 

@@ -10,6 +10,7 @@ const LINKS = [
   { href: "/admin/reservations", label: "Reservations", icon: "CalendarDays" },
   { href: "/admin/zones", label: "Zones", icon: "LayoutGrid" },
   { href: "/admin/pricing", label: "Pricing", icon: "Tag" },
+  { href: "/admin/content", label: "Content", icon: "PencilLine" },
   { href: "/admin/analytics", label: "Analytics", icon: "ChartColumn" },
 ];
 

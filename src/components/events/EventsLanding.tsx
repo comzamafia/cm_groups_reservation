@@ -5,62 +5,13 @@ import { Icon } from "./Icon";
 import { BookingModal } from "./BookingModal";
 import { EventInquiryModal } from "./EventInquiryModal";
 
-/* ───────────────────────── Data ───────────────────────── */
-const SPACES = [
-  {
-    name: "The Mural Lounge",
-    img: "/assets/mural-booths.jpg",
-    seated: 40,
-    reception: 60,
-    tag: "Signature",
-    desc: "Banquette seating beneath our hand-painted jungle mural, lit by glowing rattan lanterns. The room of choice for milestone dinners with theatre.",
-  },
-  {
-    name: "The Curio Library",
-    img: "/assets/curio-shelf.jpg",
-    seated: 18,
-    reception: 28,
-    tag: "Intimate",
-    desc: "An intimate, warmly-lit alcove framed by backlit walnut shelving and collected treasures. Tailor-made for board dinners and close celebrations.",
-  },
-  {
-    name: "Main Dining Buyout",
-    img: "/assets/bar-dining-room.jpg",
-    seated: 120,
-    reception: 180,
-    tag: "Full Venue",
-    desc: "The entire room — sweeping marble bar, herringbone floors and mural walls — exclusively yours. The grandest stage for weddings and receptions.",
-  },
-] as const;
-
-const MENUS = [
-  {
-    icon: "UtensilsCrossed",
-    name: "Family-Style Thai Feast",
-    price: "from $68 / guest",
-    desc: "Shared platters served to the centre of the table — green curry, crispy pad see ew, whole fried sea bass, jasmine rice and seasonal som tam.",
-    items: ["Three shared starters", "Four mains, family-style", "Sticky rice & mango"],
-  },
-  {
-    icon: "Martini",
-    name: "Cocktail Reception Canapés",
-    price: "from $52 / guest",
-    desc: "Passed bites and a stationed display for free-flowing evenings — chicken satay, betel-leaf miang kham, prawn toast and pandan custard tarts.",
-    items: ["Eight passed canapés", "Grazing station", "Two signature cocktails"],
-  },
-  {
-    icon: "Wine",
-    name: "The Chef's Tasting",
-    price: "from $95 / guest",
-    desc: "A guided seven-course progression from our kitchen, paired by the room — the full expression of modern Northern Thai cooking, plated and personal.",
-    items: ["Seven plated courses", "Optional wine pairing", "Dedicated server team"],
-  },
-] as const;
+type C = Record<string, string>;
 
 const scrollToId = (id: string) => {
   const el = document.getElementById(id);
   if (el) window.scrollTo({ top: el.offsetTop - 64, behavior: "smooth" });
 };
+const lines = (s: string) => (s || "").split("\n").map((x) => x.trim()).filter(Boolean);
 
 /* ───────────────────── Shared bits ───────────────────── */
 function Flourish() {
@@ -73,7 +24,6 @@ function Flourish() {
   );
 }
 
-/* Brand glyphs — lucide removed brand icons, so inline these to match the design. */
 function InstagramGlyph() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -83,7 +33,6 @@ function InstagramGlyph() {
     </svg>
   );
 }
-
 function FacebookGlyph() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -93,50 +42,30 @@ function FacebookGlyph() {
 }
 
 function Reveal({
-  children,
-  as: Tag = "div",
-  className = "",
-  delay = 0,
-  style = {},
+  children, as: Tag = "div", className = "", delay = 0, style = {},
 }: {
-  children: React.ReactNode;
-  as?: React.ElementType;
-  className?: string;
-  delay?: number;
-  style?: React.CSSProperties;
+  children: React.ReactNode; as?: React.ElementType; className?: string; delay?: number; style?: React.CSSProperties;
 }) {
   const ref = useRef<HTMLElement | null>(null);
   const [seen, setSeen] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            setSeen(true);
-            io.unobserve(el);
-          }
-        });
-      },
-      { threshold: 0.14, rootMargin: "0px 0px -8% 0px" },
-    );
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { setSeen(true); io.unobserve(el); } });
+    }, { threshold: 0.14, rootMargin: "0px 0px -8% 0px" });
     io.observe(el);
     return () => io.disconnect();
   }, []);
   return (
-    <Tag
-      ref={ref}
-      className={`reveal ${seen ? "is-in" : ""} ${className}`}
-      style={{ transitionDelay: `${delay}ms`, ...style }}
-    >
+    <Tag ref={ref} className={`reveal ${seen ? "is-in" : ""} ${className}`} style={{ transitionDelay: `${delay}ms`, ...style }}>
       {children}
     </Tag>
   );
 }
 
 /* ───────────────────────── Nav ───────────────────────── */
-function Nav({ onBookTable }: { onBookTable: () => void }) {
+function Nav({ c, onBookTable }: { c: C; onBookTable: () => void }) {
   const [solid, setSolid] = useState(false);
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 40);
@@ -144,22 +73,19 @@ function Nav({ onBookTable }: { onBookTable: () => void }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  const go = (id: string) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    scrollToId(id);
-  };
+  const go = (id: string) => (e: React.MouseEvent) => { e.preventDefault(); scrollToId(id); };
   return (
     <header className={`nav ${solid ? "is-solid" : ""}`}>
       <div className="nav-inner">
         <a href="#top" className="brand" onClick={go("top")}>
-          <span className="brand-mark">CHIANG&nbsp;MAI</span>
-          <span className="brand-sub">Modern Thai · Mississauga</span>
+          <span className="brand-mark">{c.brand_name}</span>
+          <span className="brand-sub">{c.brand_sub}</span>
         </a>
         <nav className="nav-links">
-          <a href="#spaces" onClick={go("spaces")}>Spaces</a>
-          <a href="#menus" onClick={go("menus")}>Menus</a>
-          <a href="#story" onClick={go("story")}>The Venue</a>
-          <button type="button" className="nav-cta" onClick={onBookTable}>Book a Table</button>
+          <a href="#spaces" onClick={go("spaces")}>{c.nav_spaces}</a>
+          <a href="#menus" onClick={go("menus")}>{c.nav_menus}</a>
+          <a href="#story" onClick={go("story")}>{c.nav_venue}</a>
+          <button type="button" className="nav-cta" onClick={onBookTable}>{c.nav_cta}</button>
         </nav>
       </div>
     </header>
@@ -167,68 +93,62 @@ function Nav({ onBookTable }: { onBookTable: () => void }) {
 }
 
 /* ───────────────────────── Hero ───────────────────────── */
-function Hero({ onBookTable, onBookEvent }: { onBookTable: () => void; onBookEvent: () => void }) {
+function Hero({ c, onBookTable, onBookEvent }: { c: C; onBookTable: () => void; onBookEvent: () => void }) {
   return (
     <section className="hero" id="top">
-      <div className="hero-img" style={{ backgroundImage: `url(/assets/bar-dining-room.jpg)` }} />
+      <div className="hero-img" style={{ backgroundImage: `url(${c.hero_image})` }} />
       <div className="hero-scrim" />
       <div className="hero-grain" />
       <div className="hero-content">
         <div className="hero-eyebrow reveal is-in">
           <Flourish />
-          <span>Private Dining &amp; Group Events</span>
+          <span>{c.hero_eyebrow}</span>
         </div>
         <h1 className="hero-title">
-          <span className="line line-1">Gather beneath</span>
-          <span className="line line-2"><em>the canopy.</em></span>
+          <span className="line line-1">{c.hero_title_1}</span>
+          <span className="line line-2"><em>{c.hero_title_2}</em></span>
         </h1>
-        <p className="hero-sub line line-3">
-          Celebrate your most memorable moments inside our modern Thai dining room —
-          murals, candlelight and a kitchen built for a crowd.
-        </p>
+        <p className="hero-sub line line-3">{c.hero_subtitle}</p>
         <div className="hero-actions line line-4">
           <button type="button" className="btn-gold" onClick={onBookTable}>
-            Book a Table <Icon name="ArrowRight" size={18} />
+            {c.hero_cta_primary} <Icon name="ArrowRight" size={18} />
           </button>
           <button type="button" className="btn-outline" onClick={onBookEvent}>
-            Book an Event
+            {c.hero_cta_secondary}
           </button>
         </div>
       </div>
       <div className="hero-foot line line-5">
-        <div className="hero-foot-item"><Icon name="Users" size={16} /> 2 – 180 guests</div>
-        <div className="hero-foot-item"><Icon name="MapPin" size={16} /> Heartland, Mississauga</div>
-        <div className="hero-foot-item"><Icon name="Sparkles" size={16} /> Fully customizable menus</div>
+        <div className="hero-foot-item"><Icon name="Users" size={16} /> {c.hero_stat_1}</div>
+        <div className="hero-foot-item"><Icon name="MapPin" size={16} /> {c.hero_stat_2}</div>
+        <div className="hero-foot-item"><Icon name="Sparkles" size={16} /> {c.hero_stat_3}</div>
       </div>
     </section>
   );
 }
 
 /* ───────────────────── Story ───────────────────── */
-function Story() {
+function Story({ c }: { c: C }) {
+  const points = [c.story_point_1, c.story_point_2, c.story_point_3, c.story_point_4].filter(Boolean);
+  const icons = ["ChefHat", "Speaker", "CalendarHeart", "GlassWater"];
   return (
     <section className="story" id="story">
       <div className="story-grid">
         <Reveal className="story-media">
-          <div className="story-photo" style={{ backgroundImage: `url(/assets/mural-booths.jpg)` }} />
+          <div className="story-photo" style={{ backgroundImage: `url(${c.story_image})` }} />
           <div className="story-badge">
-            <span className="badge-num">12</span>
-            <span className="badge-txt">years hosting<br />celebrations</span>
+            <span className="badge-num">{c.story_badge_num}</span>
+            <span className="badge-txt">{c.story_badge_text}</span>
           </div>
         </Reveal>
         <Reveal className="story-copy" delay={120}>
-          <div className="kicker"><Flourish /><span>Why Chiang Mai</span></div>
-          <h2 className="h2">A room that does the celebrating for you.</h2>
-          <p className="lead">
-            From corporate milestones to birthdays and weddings, our team builds the
-            evening around you — flexible floor plans, customizable menus and a space
-            that feels designed for the occasion before a single guest arrives.
-          </p>
+          <div className="kicker"><Flourish /><span>{c.story_kicker}</span></div>
+          <h2 className="h2">{c.story_heading}</h2>
+          <p className="lead">{c.story_lead}</p>
           <ul className="story-list">
-            <li><Icon name="ChefHat" size={18} /> Menus tailored with our executive chef</li>
-            <li><Icon name="Speaker" size={18} /> In-house AV, music &amp; microphone</li>
-            <li><Icon name="CalendarHeart" size={18} /> A dedicated event planner, end to end</li>
-            <li><Icon name="GlassWater" size={18} /> Bespoke cocktail &amp; wine pairings</li>
+            {points.map((p, i) => (
+              <li key={i}><Icon name={icons[i] ?? "Check"} size={18} /> {p}</li>
+            ))}
           </ul>
         </Reveal>
       </div>
@@ -237,29 +157,28 @@ function Story() {
 }
 
 /* ───────────────────── Spaces ───────────────────── */
-function Spaces({ onBookTable }: { onBookTable: () => void }) {
+function Spaces({ c, onBookTable }: { c: C; onBookTable: () => void }) {
+  const cards = [1, 2, 3].map((i) => ({
+    name: c[`space${i}_name`], tag: c[`space${i}_tag`], caps: c[`space${i}_caps`],
+    desc: c[`space${i}_desc`], image: c[`space${i}_image`],
+  })).filter((s) => s.name);
   return (
     <section className="spaces" id="spaces">
       <div className="section-head">
-        <div className="kicker center"><Flourish /><span>Our Event Spaces</span></div>
-        <h2 className="h2 center">Four rooms, one unforgettable address.</h2>
-        <p className="section-intro">
-          Each space carries its own mood — choose the one that matches your moment,
-          or take the room entirely.
-        </p>
+        <div className="kicker center"><Flourish /><span>{c.spaces_kicker}</span></div>
+        <h2 className="h2 center">{c.spaces_heading}</h2>
+        <p className="section-intro">{c.spaces_intro}</p>
       </div>
       <div className="space-grid is-three">
-        {SPACES.map((s, i) => (
+        {cards.map((s, i) => (
           <Reveal as="article" className="space-card" key={s.name} delay={i * 90}>
-            <div className="space-img" style={{ backgroundImage: `url(${s.img})` }}>
-              <span className="space-tag">{s.tag}</span>
+            <div className="space-img" style={{ backgroundImage: `url(${s.image})` }}>
+              {s.tag && <span className="space-tag">{s.tag}</span>}
             </div>
             <div className="space-body">
               <h3 className="space-name">{s.name}</h3>
               <div className="space-cap">
-                <span><Icon name="Armchair" size={15} /> Seated {s.seated}</span>
-                <span className="cap-sep" />
-                <span><Icon name="Users" size={15} /> Reception {s.reception}</span>
+                <span><Icon name="Users" size={15} /> {s.caps}</span>
               </div>
               <p className="space-desc">{s.desc}</p>
               <button type="button" className="link-arrow" onClick={onBookTable}>
@@ -274,20 +193,22 @@ function Spaces({ onBookTable }: { onBookTable: () => void }) {
 }
 
 /* ───────────────────── Menus ───────────────────── */
-function Menus() {
+function Menus({ c }: { c: C }) {
+  const icons = ["UtensilsCrossed", "Martini", "Wine"];
+  const menus = [1, 2, 3].map((i) => ({
+    icon: icons[i - 1], name: c[`menu${i}_name`], price: c[`menu${i}_price`],
+    desc: c[`menu${i}_desc`], items: lines(c[`menu${i}_items`]),
+  })).filter((m) => m.name);
   return (
     <section className="menus" id="menus">
       <div className="menus-inner">
         <div className="section-head left">
-          <div className="kicker"><Flourish /><span>Set Menus &amp; Packages</span></div>
-          <h2 className="h2">Dining styles built for sharing.</h2>
-          <p className="section-intro">
-            Every package is a starting point. We&apos;ll shape courses, dietary needs and
-            pacing around your group with our chef.
-          </p>
+          <div className="kicker"><Flourish /><span>{c.menus_kicker}</span></div>
+          <h2 className="h2">{c.menus_heading}</h2>
+          <p className="section-intro">{c.menus_intro}</p>
         </div>
         <div className="menu-grid">
-          {MENUS.map((m, i) => (
+          {menus.map((m, i) => (
             <Reveal as="article" className="menu-card" key={m.name} delay={i * 90}>
               <div className="menu-icon"><Icon name={m.icon} size={22} /></div>
               <div className="menu-top">
@@ -296,17 +217,15 @@ function Menus() {
               </div>
               <p className="menu-desc">{m.desc}</p>
               <ul className="menu-items">
-                {m.items.map((it) => (
-                  <li key={it}><Icon name="Check" size={14} /> {it}</li>
-                ))}
+                {m.items.map((it) => (<li key={it}><Icon name="Check" size={14} /> {it}</li>))}
               </ul>
             </Reveal>
           ))}
         </div>
         <Reveal className="menu-download">
           <div>
-            <h4>Take the full picture with you.</h4>
-            <p>Floor plans, sample menus, capacities and pricing in one place.</p>
+            <h4>{c.menu_dl_title}</h4>
+            <p>{c.menu_dl_sub}</p>
           </div>
           <a href="#" className="btn-outline" onClick={(e) => e.preventDefault()}>
             <Icon name="Download" size={17} /> Download Event Package (PDF)
@@ -317,36 +236,32 @@ function Menus() {
   );
 }
 
-/* ───────────────────── Reserve (CTA, no inline form) ───────────────────── */
-function Reserve({ onBookTable, onBookEvent }: { onBookTable: () => void; onBookEvent: () => void }) {
+/* ───────────────────── Reserve ───────────────────── */
+function Reserve({ c, onBookTable, onBookEvent }: { c: C; onBookTable: () => void; onBookEvent: () => void }) {
   return (
     <section className="inquire" id="inquire">
       <div className="reserve-grid">
         <div>
-          <div className="kicker"><Flourish /><span>Reserve Your Evening</span></div>
-          <h2 className="h2">Let&apos;s plan something<br />worth remembering.</h2>
-          <p className="lead">
-            Book a table in any of our three zones in seconds, or start an inquiry
-            for a larger private event — our team will take it from there.
-          </p>
+          <div className="kicker"><Flourish /><span>{c.reserve_kicker}</span></div>
+          <h2 className="h2">{c.reserve_heading}</h2>
+          <p className="lead">{c.reserve_lead}</p>
           <ul className="contact-list">
-            <li><span className="ci"><Icon name="Mail" size={16} /></span><a href="mailto:events@chiangmai.ca">events@chiangmai.ca</a></li>
-            <li><span className="ci"><Icon name="Phone" size={16} /></span><a href="tel:+19055550182">(905) 555-0182</a></li>
-            <li><span className="ci"><Icon name="MapPin" size={16} /></span>5985 Rodeo Drive, Mississauga, ON</li>
-            <li><span className="ci"><Icon name="Clock" size={16} /></span>Events team · Mon–Fri, 10–6</li>
+            <li><span className="ci"><Icon name="Mail" size={16} /></span><a href={`mailto:${c.contact_email}`}>{c.contact_email}</a></li>
+            <li><span className="ci"><Icon name="Phone" size={16} /></span><a href={`tel:${c.contact_phone}`}>{c.contact_phone}</a></li>
+            <li><span className="ci"><Icon name="MapPin" size={16} /></span>{c.contact_address}</li>
+            <li><span className="ci"><Icon name="Clock" size={16} /></span>{c.contact_hours}</li>
           </ul>
         </div>
-
         <div className="reserve-cards">
           <button type="button" className="reserve-card primary" onClick={onBookTable}>
             <Icon name="CalendarCheck" size={26} />
-            <span className="reserve-card-title">Book a Table</span>
+            <span className="reserve-card-title">{c.hero_cta_primary}</span>
             <span className="reserve-card-sub">Pick a zone &amp; time — instantly confirmed.</span>
             <span className="reserve-card-go">Choose a time <Icon name="ArrowRight" size={16} /></span>
           </button>
           <button type="button" className="reserve-card" onClick={onBookEvent}>
             <Icon name="Sparkles" size={26} />
-            <span className="reserve-card-title">Book an Event</span>
+            <span className="reserve-card-title">{c.hero_cta_secondary}</span>
             <span className="reserve-card-sub">Large parties &amp; full buyouts — send an inquiry.</span>
             <span className="reserve-card-go">Start inquiry <Icon name="ArrowRight" size={16} /></span>
           </button>
@@ -357,13 +272,13 @@ function Reserve({ onBookTable, onBookEvent }: { onBookTable: () => void; onBook
 }
 
 /* ───────────────────── Footer ───────────────────── */
-function Footer() {
+function Footer({ c }: { c: C }) {
   return (
     <footer className="footer">
       <div className="footer-inner">
         <div className="footer-brand">
-          <span className="brand-mark big">CHIANG&nbsp;MAI</span>
-          <p>Modern Thai dining in the heart of Mississauga. Open for dinner nightly, and yours for the evening when the occasion calls.</p>
+          <span className="brand-mark big">{c.brand_name}</span>
+          <p>{c.footer_blurb}</p>
           <div className="footer-social">
             <a href="#" onClick={(e) => e.preventDefault()} aria-label="Instagram"><InstagramGlyph /></a>
             <a href="#" onClick={(e) => e.preventDefault()} aria-label="Facebook"><FacebookGlyph /></a>
@@ -371,22 +286,22 @@ function Footer() {
         </div>
         <div className="footer-col">
           <h5>Events</h5>
-          <a href="mailto:events@chiangmai.ca">events@chiangmai.ca</a>
-          <a href="tel:+19055550182">(905) 555-0182</a>
+          <a href={`mailto:${c.contact_email}`}>{c.contact_email}</a>
+          <a href={`tel:${c.contact_phone}`}>{c.contact_phone}</a>
         </div>
         <div className="footer-col">
           <h5>Visit</h5>
-          <span>5985 Rodeo Drive</span>
-          <span>Mississauga, ON</span>
+          <span>{c.footer_visit_1}</span>
+          <span>{c.footer_visit_2}</span>
         </div>
         <div className="footer-col">
           <h5>Hours</h5>
-          <span>Dinner · 5pm–late, nightly</span>
-          <span>Events · Mon–Fri, 10–6</span>
+          <span>{c.footer_hours_1}</span>
+          <span>{c.footer_hours_2}</span>
         </div>
       </div>
       <div className="footer-base">
-        <span>© 2026 Chiang Mai Restaurant. All rights reserved.</span>
+        <span>{c.footer_copyright}</span>
         <span className="footer-base-links">
           <a href="#" onClick={(e) => e.preventDefault()}>Privacy</a>
           <a href="#" onClick={(e) => e.preventDefault()}>Accessibility</a>
@@ -397,7 +312,8 @@ function Footer() {
 }
 
 /* ───────────────────── Page ───────────────────── */
-export function EventsLanding() {
+export function EventsLanding({ content }: { content: C }) {
+  const c = content;
   const [tableOpen, setTableOpen] = useState(false);
   const [eventOpen, setEventOpen] = useState(false);
   const openTable = () => setTableOpen(true);
@@ -405,15 +321,15 @@ export function EventsLanding() {
 
   return (
     <>
-      <Nav onBookTable={openTable} />
+      <Nav c={c} onBookTable={openTable} />
       <main>
-        <Hero onBookTable={openTable} onBookEvent={openEvent} />
-        <Story />
-        <Spaces onBookTable={openTable} />
-        <Menus />
-        <Reserve onBookTable={openTable} onBookEvent={openEvent} />
+        <Hero c={c} onBookTable={openTable} onBookEvent={openEvent} />
+        <Story c={c} />
+        <Spaces c={c} onBookTable={openTable} />
+        <Menus c={c} />
+        <Reserve c={c} onBookTable={openTable} onBookEvent={openEvent} />
       </main>
-      <Footer />
+      <Footer c={c} />
 
       <BookingModal open={tableOpen} onClose={() => setTableOpen(false)} />
       <EventInquiryModal open={eventOpen} onClose={() => setEventOpen(false)} />

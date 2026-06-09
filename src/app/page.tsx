@@ -1,5 +1,9 @@
 import { EventsLanding } from "@/components/events/EventsLanding";
+import { getContent } from "@/lib/content";
 
-export default function Home() {
-  return <EventsLanding />;
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const content = await getContent();
+  return <EventsLanding content={content} />;
 }
