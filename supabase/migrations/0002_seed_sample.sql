@@ -9,6 +9,14 @@ declare
   peak_id uuid;
   sp_private uuid;
 begin
+  -- Idempotent guard: if the sample location already exists, skip seeding
+  -- entirely so this file can be re-run safely without duplicate-key errors.
+  select id into loc_id from locations where slug = 'mississauga';
+  if loc_id is not null then
+    raise notice 'Sample location "mississauga" already seeded — skipping.';
+    return;
+  end if;
+
   insert into locations (name, slug, accent_color, address)
   values ('Chiang Mai — Mississauga', 'mississauga', '#FABC3A', 'Mississauga, ON')
   returning id into loc_id;
