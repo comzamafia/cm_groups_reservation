@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { AddZoneForm } from "@/components/admin/AddZoneForm";
 import { ZoneActions } from "@/components/admin/ZoneActions";
+import { EditZoneButton } from "@/components/admin/EditZoneButton";
 
 export const dynamic = "force-dynamic";
 
@@ -77,7 +78,12 @@ export default async function ZonesPage() {
                   <td className="muted">{z.seated_cap ?? "—"}</td>
                   <td className="muted">{z.standing_cap ?? "—"}</td>
                   <td className="muted">${Number(z.base_min_spend ?? 0).toLocaleString()}</td>
-                  <td><ZoneActions id={z.id} active={z.active} /></td>
+                  <td>
+                    <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", alignItems: "center" }}>
+                      <EditZoneButton zone={z} />
+                      <ZoneActions id={z.id} active={z.active} />
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

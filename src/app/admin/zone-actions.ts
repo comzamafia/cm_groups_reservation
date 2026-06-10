@@ -79,6 +79,53 @@ export async function createZone(formData: FormData) {
   return { ok: true };
 }
 
+export async function updateZone(id: string, formData: FormData) {
+  const supabase = await createClient();
+
+  const name = String(formData.get("name") || "").trim();
+  const type = String(formData.get("type") || "table");
+  if (!name) return { ok: false, error: "Name is required." };
+  if (!TYPES.includes(type)) return { ok: false, error: "Invalid type." };
+
+  const num = (k: string, d: number | null) => {
+    const v = formData.get(k);
+    return v === null || v === "" ? d : Number(v);
+  };
+  const str = (k: string) => {
+    const v = String(formData.get(k) || "").trim();
+    return v || null;
+  };
+
+  // New upload wins; otherwise keep the URL field (prefilled with the current value).
+  let photoUrl = str("photo_url");
+  const file = formData.get("photo_file");
+  if (file && typeof file !== "string" && file.size > 0) {
+    try {
+      photoUrl = await uploadZonePhoto(file, name);
+    } catch (e) {
+      return { ok: false, error: `Image upload failed: ${(e as Error).message}` };
+    }
+  }
+
+  const { error } = await supabase
+    .from("spaces")
+    .update({
+      name,
+      type,
+      seated_cap: num("seated_cap", null),
+      standing_cap: num("standing_cap", null),
+      base_min_spend: num("base_min_spend", 0),
+      photo_url: photoUrl,
+      sort_order: num("sort_order", 0),
+      active: formData.get("active") === "on",
+    })
+    .eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidate();
+  return { ok: true };
+}
+
 export async function setZoneActive(id: string, active: boolean) {
   const supabase = await createClient();
   const { error } = await supabase.from("spaces").update({ active }).eq("id", id);

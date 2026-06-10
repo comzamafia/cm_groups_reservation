@@ -194,6 +194,7 @@
 .edit-label { display: none; }
 /* Edit button in the reservations agenda uses a gold (not danger) hover */
 .tbl-cards .icon-btn:hover { border-color: var(--gold-lite); color: var(--gold-lite); }
+.icon-btn.edit:hover { border-color: var(--gold-lite); color: var(--gold-lite); }
 
 /* ── Content editor ── */
 .content-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
