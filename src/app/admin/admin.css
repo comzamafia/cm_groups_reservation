@@ -179,8 +179,39 @@
 
 @media (max-width: 760px) {
   .admin-shell { grid-template-columns: 1fr; }
-  .admin-side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; }
-  .admin-nav { grid-auto-flow: column; margin-top: 0; }
-  .admin-side-foot { margin-top: 0; margin-left: auto; }
+  .admin-side {
+    position: sticky; top: 0; z-index: 30; height: auto;
+    flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px;
+    padding: 12px 14px;
+  }
+  .admin-brand { padding: 0; font-size: 1.05rem; }
+  .admin-brand small { display: none; }
+  .admin-side-foot { order: 1; margin: 0 0 0 auto; display: flex; align-items: center; gap: 10px; }
+  .admin-user { display: none; }
+  .admin-signout { width: auto; padding: 8px 12px; }
+  .admin-nav {
+    order: 2; flex: 1 0 100%; margin: 0;
+    display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 4px;
+    -webkit-overflow-scrolling: touch; padding-bottom: 2px;
+  }
+  .admin-nav a { white-space: nowrap; padding: 8px 12px; }
+
+  .admin-main { padding: 20px 16px 48px; }
+  .admin-title { font-size: 1.5rem; }
+  .admin-head { gap: 12px; }
+  .admin-head .filters { width: 100%; }
+  .admin-head .filters select { flex: 1 1 auto; min-width: 0; }
   .tbl-wrap { overflow-x: auto; }
+  .panel-head { gap: 10px; }
+}
+
+/* Compact the month calendar so all 7 columns stay usable on phones */
+@media (max-width: 640px) {
+  .cal-head { padding: 12px 14px; }
+  .cal-title { font-size: 1.05rem; }
+  .cal-nav button { width: 30px; height: 30px; }
+  .cal-dow { padding: 7px 1px; font-size: 0.58rem; letter-spacing: 0.04em; }
+  .cal-cell { min-height: 58px; padding: 4px 3px; gap: 2px; }
+  .cal-date { width: 20px; height: 20px; font-size: 0.7rem; }
+  .cal-ev { font-size: 0.58rem; padding: 1px 4px; border-radius: 3px; }
 }
