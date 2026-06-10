@@ -69,6 +69,7 @@ export function Calendar({
           </Link>
         </div>
       </div>
+      <div className="cal-scroll">
       <div className="cal-grid">
         {DOW.map((d) => (
           <div key={d} className="cal-dow">
@@ -98,6 +99,7 @@ export function Calendar({
             </div>
           );
         })}
+      </div>
       </div>
     </div>
   );
