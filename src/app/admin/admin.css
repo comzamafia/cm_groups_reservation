@@ -126,8 +126,13 @@
 
 /* ── Modal ── */
 .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(5,4,6,.72); backdrop-filter: blur(3px); display: grid; place-items: center; padding: 24px; }
-.modal { width: 100%; max-width: 460px; background: var(--card-2); border: 1px solid var(--line); border-radius: 12px; padding: 26px 26px 24px; box-shadow: 0 40px 90px -40px rgba(0,0,0,.95); display: grid; gap: 14px; }
+.modal { width: 100%; max-width: 460px; background: var(--card-2); border: 1px solid var(--line); border-radius: 12px; padding: 26px 26px 24px; box-shadow: 0 40px 90px -40px rgba(0,0,0,.95); display: grid; gap: 14px; max-height: 92vh; overflow-y: auto; }
+.modal.wide { max-width: 580px; }
 .modal-title { font-family: var(--font-serif), Georgia, serif; font-size: 1.4rem; font-weight: 600; margin: 0; color: var(--text); }
+
+/* Tap-to-call phone link in the agenda */
+.resv-tel { display: inline-flex; align-items: center; gap: 5px; color: var(--gold-lite); font-size: 0.82rem; font-weight: 600; }
+.resv-tel:hover { text-decoration: underline; }
 
 /* ── Pricing rule form ── */
 .rule-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }

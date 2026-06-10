@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
-import { StatusSelect } from "@/components/admin/StatusSelect";
 import { FilterSelect } from "@/components/admin/FilterSelect";
 import { Calendar, type CalEvent } from "@/components/admin/Calendar";
+import { ReservationsTable, type ResvRow } from "@/components/admin/ReservationsTable";
 
 export const dynamic = "force-dynamic";
 
@@ -14,15 +14,19 @@ const RESV_STATUS = [
   { value: "no_show", label: "No show" },
 ];
 
-type Row = {
+type RawRow = {
   id: string;
   guest_name: string;
+  guest_phone: string | null;
+  guest_email: string | null;
   party_size: number;
+  space_id: string | null;
   date: string;
   time: string;
   status: string;
+  total_min_spend: number | null;
+  notes: string | null;
   space: { name: string } | null;
-  location: { name: string } | null;
 };
 
 function currentMonth() {
@@ -33,32 +37,24 @@ function currentMonth() {
 export default async function ReservationsPage({
   searchParams,
 }: {
-  searchParams: Promise<{
-    month?: string;
-    venue?: string;
-    space?: string;
-    status?: string;
-  }>;
+  searchParams: Promise<{ month?: string; venue?: string; space?: string; status?: string }>;
 }) {
   const sp = await searchParams;
   const month = sp.month && /^\d{4}-\d{2}$/.test(sp.month) ? sp.month : currentMonth();
   const supabase = await createClient();
 
-  // Month range
   const [yy, mm] = month.split("-").map(Number);
   const start = `${month}-01`;
-  const end = `${yy}-${String(mm).padStart(2, "0")}-${String(
-    new Date(yy, mm, 0).getDate(),
-  ).padStart(2, "0")}`;
+  const end = `${yy}-${String(mm).padStart(2, "0")}-${String(new Date(yy, mm, 0).getDate()).padStart(2, "0")}`;
 
   const [locsRes, spacesRes, resvRes] = await Promise.all([
     supabase.from("locations").select("id, name").order("name"),
-    supabase.from("spaces").select("id, name, location_id").order("name"),
+    supabase.from("spaces").select("id, name, location_id").eq("active", true).order("sort_order").order("name"),
     (() => {
       let q = supabase
         .from("reservations")
         .select(
-          "id, guest_name, party_size, date, time, status, space:spaces(name), location:locations(name)",
+          "id, guest_name, guest_phone, guest_email, party_size, space_id, date, time, status, total_min_spend, notes, space:spaces(name)",
         )
         .gte("date", start)
         .lte("date", end)
@@ -73,14 +69,28 @@ export default async function ReservationsPage({
 
   const locations = locsRes.data ?? [];
   const spaces = spacesRes.data ?? [];
-  const rows = (resvRes.data ?? []) as unknown as Row[];
+  const raw = (resvRes.data ?? []) as unknown as RawRow[];
+
+  const rows: ResvRow[] = raw.map((r) => ({
+    id: r.id,
+    guest_name: r.guest_name,
+    guest_phone: r.guest_phone,
+    guest_email: r.guest_email,
+    party_size: r.party_size,
+    space_id: r.space_id,
+    space_name: r.space?.name ?? null,
+    date: r.date,
+    time: r.time,
+    status: r.status,
+    total_min_spend: r.total_min_spend,
+    notes: r.notes,
+  }));
 
   const events: CalEvent[] = rows.map((r) => ({
     date: r.date,
     label: `${r.guest_name} · ${r.party_size}p`,
   }));
 
-  // Preserve filters in calendar prev/next links
   const baseQuery =
     (sp.venue ? `&venue=${sp.venue}` : "") +
     (sp.space ? `&space=${sp.space}` : "") +
@@ -91,27 +101,12 @@ export default async function ReservationsPage({
       <div className="admin-head">
         <div>
           <h1 className="admin-title">Reservations</h1>
-          <p className="admin-sub">Central event calendar — filter by venue, space or status.</p>
+          <p className="admin-sub">Add, edit and confirm bookings — full guest details for call-backs.</p>
         </div>
         <div className="filters">
-          <FilterSelect
-            param="venue"
-            value={sp.venue ?? ""}
-            options={locations.map((l) => ({ value: l.id, label: l.name }))}
-            allLabel="All venues"
-          />
-          <FilterSelect
-            param="space"
-            value={sp.space ?? ""}
-            options={spaces.map((s) => ({ value: s.id, label: s.name }))}
-            allLabel="All spaces"
-          />
-          <FilterSelect
-            param="status"
-            value={sp.status ?? ""}
-            options={RESV_STATUS}
-            allLabel="All statuses"
-          />
+          <FilterSelect param="venue" value={sp.venue ?? ""} options={locations.map((l) => ({ value: l.id, label: l.name }))} allLabel="All venues" />
+          <FilterSelect param="space" value={sp.space ?? ""} options={spaces.map((s) => ({ value: s.id, label: s.name }))} allLabel="All spaces" />
+          <FilterSelect param="status" value={sp.status ?? ""} options={RESV_STATUS} allLabel="All statuses" />
         </div>
       </div>
 
@@ -119,46 +114,7 @@ export default async function ReservationsPage({
         <Calendar month={month} events={events} baseQuery={baseQuery} />
       </div>
 
-      <div className="panel">
-        <div className="panel-head">
-          <h2>Agenda — {rows.length} booking{rows.length === 1 ? "" : "s"} this month</h2>
-        </div>
-        <div className="tbl-wrap">
-          <table className="tbl">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Guest</th>
-                <th>Party</th>
-                <th>Space</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="tbl-empty">
-                    No reservations match this view for {month}.
-                  </td>
-                </tr>
-              )}
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <td className="muted">{r.date}</td>
-                  <td className="muted">{r.time?.slice(0, 5)}</td>
-                  <td>{r.guest_name}</td>
-                  <td className="muted">{r.party_size}</td>
-                  <td className="muted">{r.space?.name ?? "—"}</td>
-                  <td>
-                    <StatusSelect kind="reservation" id={r.id} value={r.status} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ReservationsTable rows={rows} spaces={spaces.map((s) => ({ id: s.id, name: s.name }))} month={month} />
     </>
   );
 }
