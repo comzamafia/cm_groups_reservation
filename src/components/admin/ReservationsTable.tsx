@@ -56,7 +56,7 @@ export function ReservationsTable({
         </button>
       </div>
       <div className="tbl-wrap">
-        <table className="tbl">
+        <table className="tbl tbl-cards">
           <thead>
             <tr>
               <th>When</th>
@@ -75,32 +75,32 @@ export function ReservationsTable({
             )}
             {rows.map((r) => (
               <tr key={r.id}>
-                <td>
-                  {r.date}
-                  <br />
-                  <span className="muted">{String(r.time).slice(0, 5)}</span>
+                <td data-label="When">
+                  <span>{r.date} <span className="muted">· {String(r.time).slice(0, 5)}</span></span>
                 </td>
-                <td>
-                  <strong>{r.guest_name}</strong>
-                  {r.guest_phone && (
-                    <div><a href={`tel:${r.guest_phone}`} className="resv-tel"><Icon name="Phone" size={12} /> {r.guest_phone}</a></div>
-                  )}
-                  {r.guest_email && (
-                    <div className="muted" style={{ fontSize: "0.78rem" }}>{r.guest_email}</div>
-                  )}
+                <td data-label="Guest">
+                  <div>
+                    <strong>{r.guest_name}</strong>
+                    {r.guest_phone && (
+                      <div><a href={`tel:${r.guest_phone}`} className="resv-tel"><Icon name="Phone" size={12} /> {r.guest_phone}</a></div>
+                    )}
+                    {r.guest_email && (
+                      <div className="muted" style={{ fontSize: "0.78rem" }}>{r.guest_email}</div>
+                    )}
+                  </div>
                 </td>
-                <td className="muted">{r.party_size}</td>
-                <td className="muted">{r.space_name ?? "—"}</td>
-                <td style={{ color: "var(--gold-lite)", fontWeight: 600 }}>
+                <td className="muted" data-label="Party">{r.party_size}</td>
+                <td className="muted" data-label="Space">{r.space_name ?? "—"}</td>
+                <td data-label="Min spend" style={{ color: "var(--gold-lite)", fontWeight: 600 }}>
                   {r.total_min_spend ? `$${Number(r.total_min_spend).toLocaleString()}` : "—"}
                 </td>
-                <td className="muted" style={{ maxWidth: 200, fontSize: "0.8rem", whiteSpace: "pre-wrap" }}>
+                <td className="muted" data-label="Notes" style={{ maxWidth: 220, fontSize: "0.8rem", whiteSpace: "pre-wrap" }}>
                   {r.notes ?? "—"}
                 </td>
-                <td><StatusSelect kind="reservation" id={r.id} value={r.status} /></td>
-                <td>
+                <td data-label="Status"><StatusSelect kind="reservation" id={r.id} value={r.status} /></td>
+                <td data-label="">
                   <button type="button" className="icon-btn" onClick={() => openEdit(r)} aria-label="Edit reservation">
-                    <Icon name="Pencil" size={15} />
+                    <Icon name="Pencil" size={15} /> <span className="edit-label">Edit</span>
                   </button>
                 </td>
               </tr>

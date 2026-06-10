@@ -134,6 +134,55 @@
 .resv-tel { display: inline-flex; align-items: center; gap: 5px; color: var(--gold-lite); font-size: 0.82rem; font-weight: 600; }
 .resv-tel:hover { text-decoration: underline; }
 
+/* Danger / delete button */
+.btn-danger {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: transparent; color: #e0795b; border: 1px solid rgba(224,121,91,.45);
+  border-radius: 8px; padding: 14px 18px; font-weight: 600; font-size: 0.92rem;
+  font-family: inherit; transition: all .2s; white-space: nowrap;
+}
+.btn-danger:hover:not(:disabled) { background: rgba(224,121,91,.12); border-color: #e0795b; }
+.btn-danger:disabled { opacity: .55; cursor: not-allowed; }
+
+/* Modal action row */
+.modal-actions { display: flex; gap: 10px; margin-top: 6px; align-items: stretch; flex-wrap: wrap; }
+.modal-actions .btn-gold { flex: 1 1 200px; }
+@media (max-width: 540px) {
+  .modal-actions { flex-direction: column; }
+  .modal-actions > * { width: 100%; }
+  .modal { padding: 22px 18px 20px; }
+}
+
+/* Responsive table → stacked cards on phones (label/value rows) */
+@media (max-width: 640px) {
+  .tbl-cards thead { display: none; }
+  .tbl-cards, .tbl-cards tbody { display: block; width: 100%; }
+  .tbl-cards tr {
+    display: block; border: 1px solid var(--line); border-radius: 10px;
+    margin: 0 0 12px; padding: 4px 2px; background: rgba(255,255,255,.02);
+  }
+  .tbl-cards tr:hover td { background: transparent; }
+  .tbl-cards td {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 14px;
+    border: none; padding: 9px 14px; text-align: right; min-height: 0;
+  }
+  .tbl-cards td + td { border-top: 1px solid rgba(255,255,255,.04); }
+  .tbl-cards td::before {
+    content: attr(data-label); color: var(--sub-dim); font-size: 0.68rem;
+    letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+    text-align: left; flex: 0 0 40%; padding-top: 2px;
+  }
+  .tbl-cards td .resv-tel, .tbl-cards td a { justify-content: flex-end; }
+  .tbl-cards .status-select { width: 100%; max-width: 180px; }
+  .tbl-cards .tbl-empty { text-align: center; display: block; }
+  .tbl-cards .tbl-empty::before { content: none; }
+  /* turn the icon-only edit button into a labelled, full-width action on mobile */
+  .tbl-cards td:last-child { justify-content: stretch; }
+  .tbl-cards td:last-child::before { content: none; }
+  .tbl-cards .icon-btn { width: 100%; height: auto; padding: 11px 14px; gap: 8px; }
+  .tbl-cards .edit-label { display: inline; }
+}
+
 /* ── Pricing rule form ── */
 .rule-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 @media (max-width: 720px) { .rule-form { grid-template-columns: 1fr 1fr; } }
@@ -141,6 +190,9 @@
 /* ── Icon button ── */
 .icon-btn { background: transparent; border: 1px solid var(--line); color: var(--sub); width: 32px; height: 32px; border-radius: 6px; display: grid; place-items: center; transition: all .2s; }
 .icon-btn:hover { border-color: #e0795b; color: #e0795b; }
+.edit-label { display: none; }
+/* Edit button in the reservations agenda uses a gold (not danger) hover */
+.tbl-cards .icon-btn:hover { border-color: var(--gold-lite); color: var(--gold-lite); }
 
 /* ── Content editor ── */
 .content-bar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }

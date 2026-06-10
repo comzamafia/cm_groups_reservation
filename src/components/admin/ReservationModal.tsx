@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Icon } from "@/components/events/Icon";
 import {
   createReservation,
   updateReservation,
@@ -140,17 +141,16 @@ export function ReservationModal({
           Minimum spend is recalculated automatically from the space, shift and party size.
         </p>
 
-        <div style={{ display: "flex", gap: 10, marginTop: 4, flexWrap: "wrap" }}>
-          <button type="submit" className="btn-gold" disabled={busy} style={{ flex: 1, minWidth: 160 }}>
+        <div className="modal-actions">
+          <button type="submit" className="btn-gold" disabled={busy}>
             {busy ? "Saving…" : editing ? "Save changes" : "Create reservation"}
           </button>
+          <button type="button" className="btn-outline" onClick={onClose} disabled={busy}>Cancel</button>
           {editing && (
-            <button type="button" className="icon-btn" onClick={remove} disabled={busy}
-              style={{ width: "auto", padding: "0 14px", color: "#e0795b", borderColor: "rgba(224,121,91,.4)" }}>
-              Delete
+            <button type="button" className="btn-danger" onClick={remove} disabled={busy}>
+              <Icon name="Trash2" size={16} /> Delete
             </button>
           )}
-          <button type="button" className="btn-outline" onClick={onClose} disabled={busy}>Cancel</button>
         </div>
       </form>
     </div>
