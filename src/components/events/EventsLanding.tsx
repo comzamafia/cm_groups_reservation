@@ -158,10 +158,11 @@ function Story({ c }: { c: C }) {
 
 /* ───────────────────── Spaces ───────────────────── */
 function Spaces({ c, onBookTable }: { c: C; onBookTable: () => void }) {
-  const cards = [1, 2, 3].map((i) => ({
+  const cards = [1, 2, 3, 4].map((i) => ({
     name: c[`space${i}_name`], tag: c[`space${i}_tag`], caps: c[`space${i}_caps`],
     desc: c[`space${i}_desc`], image: c[`space${i}_image`],
   })).filter((s) => s.name);
+  const layout = cards.length === 4 ? "is-four" : cards.length === 2 ? "is-two" : "is-three";
   return (
     <section className="spaces" id="spaces">
       <div className="section-head">
@@ -169,7 +170,7 @@ function Spaces({ c, onBookTable }: { c: C; onBookTable: () => void }) {
         <h2 className="h2 center">{c.spaces_heading}</h2>
         <p className="section-intro">{c.spaces_intro}</p>
       </div>
-      <div className="space-grid is-three">
+      <div className={`space-grid ${layout}`}>
         {cards.map((s, i) => (
           <Reveal as="article" className="space-card" key={s.name} delay={i * 90}>
             <div className="space-img" style={{ backgroundImage: `url(${s.image})` }}>
