@@ -320,6 +320,16 @@ export function EventsLanding({ content }: { content: C }) {
   const openTable = () => setTableOpen(true);
   const openEvent = () => setEventOpen(true);
 
+  // If the page is restored from the back/forward (bfcache) — common on mobile
+  // after editing content in another tab — force a fresh load so edits show.
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => {
+      if (e.persisted) window.location.reload();
+    };
+    window.addEventListener("pageshow", onShow);
+    return () => window.removeEventListener("pageshow", onShow);
+  }, []);
+
   return (
     <>
       <Nav c={c} onBookTable={openTable} />

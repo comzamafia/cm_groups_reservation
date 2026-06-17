@@ -30,7 +30,8 @@ export function ContentEditor({ fields }: { fields: Field[] }) {
     const res = await saveContent(formData);
     setBusy(false);
     if (res.ok) {
-      setMsg("Saved. Your changes are live on the website.");
+      const warning = "warning" in res ? (res as { warning?: string }).warning : undefined;
+      setMsg(warning || "Saved ✓ — open the public site and refresh (pull-to-refresh on mobile) to see the changes.");
       router.refresh();
     } else {
       setErr(res.error || "Save failed.");

@@ -23,20 +23,24 @@ export async function saveContent(formData: FormData) {
   const rows: {
     key: string; grp: string; label: string; type: string; sort: number; value: string | null;
   }[] = [];
+  const failedImages: string[] = [];
 
   for (const [key, def] of Object.entries(CONTENT_DEFS)) {
     let value: string | null;
     if (def.type === "image") {
       const file = formData.get(`file__${key}`);
+      const urlVal = (() => { const u = formData.get(key); return u == null ? null : String(u); })();
       if (file && typeof file !== "string" && file.size > 0) {
         try {
           value = await uploadImage(file, key);
-        } catch (e) {
-          return { ok: false, error: `Image upload failed for "${def.label}": ${(e as Error).message}` };
+        } catch {
+          // Don't lose every other edit because one image failed — keep the
+          // existing URL for this field and report it afterwards.
+          value = urlVal;
+          failedImages.push(def.label);
         }
       } else {
-        const url = formData.get(key);
-        value = url == null ? null : String(url);
+        value = urlVal;
       }
     } else {
       const v = formData.get(key);
@@ -50,5 +54,8 @@ export async function saveContent(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin/content");
-  return { ok: true };
+  if (failedImages.length > 0) {
+    return { ok: true as const, warning: `Saved, but these images couldn't upload (use JPG/PNG/WebP under 5 MB): ${failedImages.join(", ")}` };
+  }
+  return { ok: true as const };
 }
