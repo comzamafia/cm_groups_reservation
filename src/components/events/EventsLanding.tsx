@@ -128,6 +128,23 @@ function Hero({ c, onBookTable, onBookEvent }: { c: C; onBookTable: () => void; 
 }
 
 /* ───────────────────── Story ───────────────────── */
+function LazyBg({ className, src, style, children }: { className: string; src: string; style?: React.CSSProperties; children?: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setLoaded(true); io.disconnect(); } }, { rootMargin: "200px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <div ref={ref} className={className} style={loaded ? { backgroundImage: `url(${src})`, ...style } : style}>
+      {children}
+    </div>
+  );
+}
+
 function Story({ c }: { c: C }) {
   const points = [c.story_point_1, c.story_point_2, c.story_point_3, c.story_point_4].filter(Boolean);
   const icons = ["ChefHat", "Speaker", "CalendarHeart", "GlassWater"];
@@ -135,7 +152,7 @@ function Story({ c }: { c: C }) {
     <section className="story" id="story">
       <div className="story-grid">
         <Reveal className="story-media">
-          <div className="story-photo" style={{ backgroundImage: `url(${c.story_image})` }} />
+          <LazyBg className="story-photo" src={c.story_image} />
           <div className="story-badge">
             <span className="badge-num">{c.story_badge_num}</span>
             <span className="badge-txt">{c.story_badge_text}</span>
@@ -173,9 +190,9 @@ function Spaces({ c, onBookTable }: { c: C; onBookTable: () => void }) {
       <div className={`space-grid ${layout}`}>
         {cards.map((s, i) => (
           <Reveal as="article" className="space-card" key={s.name} delay={i * 90}>
-            <div className="space-img" style={{ backgroundImage: `url(${s.image})` }}>
+            <LazyBg className="space-img" src={s.image}>
               {s.tag && <span className="space-tag">{s.tag}</span>}
-            </div>
+            </LazyBg>
             <div className="space-body">
               <h3 className="space-name">{s.name}</h3>
               <div className="space-cap">

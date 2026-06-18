@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { Icon } from "./Icon";
 import { SLOTS, slotLabel } from "@/lib/slots";
 import {
@@ -21,6 +21,15 @@ function prettyDate(d: string) {
     month: "short",
     day: "numeric",
   });
+}
+
+// Preload images into browser cache so the modal appears instantly.
+const preloaded = new Set<string>();
+function preloadImg(src: string) {
+  if (!src || preloaded.has(src)) return;
+  preloaded.add(src);
+  const img = new Image();
+  img.src = src;
 }
 
 export function BookingModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -45,6 +54,21 @@ export function BookingModal({ open, onClose }: { open: boolean; onClose: () => 
     setZones(res.zones);
     setTaken(new Set(res.taken));
     setLoading(false);
+    // Preload zone photos into the browser cache
+    for (const z of res.zones) { if (z.photo) preloadImg(z.photo); }
+  }, []);
+
+  // Start fetching availability early (before user clicks the button) by
+  // preloading on first render — the data is already cached when the modal opens.
+  const prefetched = useRef(false);
+  useEffect(() => {
+    if (!prefetched.current) {
+      prefetched.current = true;
+      preloadImg("/assets/mural-booths.jpg");
+      getAvailability(todayStr()).then((res) => {
+        for (const z of res.zones) { if (z.photo) preloadImg(z.photo); }
+      }).catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
