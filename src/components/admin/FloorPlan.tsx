@@ -36,9 +36,7 @@ export function FloorPlan({ initial, locationId, locationName }: { initial: Tabl
   const [adding, setAdding] = useState(false);
 
   const svgRef = useRef<SVGSVGElement>(null);
-  const tablesRef = useRef(tables);
-  tablesRef.current = tables;
-  const drag = useRef<{ id: string; dx: number; dy: number; moved: boolean } | null>(null);
+  const drag = useRef<{ id: string; dx: number; dy: number; w: number; h: number; moved: boolean; lastX: number; lastY: number } | null>(null);
 
   // Live sync: insert/update/delete from any staff screen.
   useEffect(() => {
@@ -78,11 +76,10 @@ export function FloorPlan({ initial, locationId, locationName }: { initial: Tabl
   const onMove = (e: PointerEvent) => {
     const d = drag.current; if (!d) return;
     const { x, y } = toSvg(e.clientX, e.clientY);
-    d.moved = true;
-    setTables((prev) => prev.map((t) => {
-      if (t.id !== d.id) return t;
-      return { ...t, x: clamp(x - d.dx, 0, CANVAS_W - t.w), y: clamp(y - d.dy, 0, CANVAS_H - t.h) };
-    }));
+    const nx = clamp(x - d.dx, 0, CANVAS_W - d.w);
+    const ny = clamp(y - d.dy, 0, CANVAS_H - d.h);
+    d.moved = true; d.lastX = nx; d.lastY = ny;
+    setTables((prev) => prev.map((t) => (t.id === d.id ? { ...t, x: nx, y: ny } : t)));
   };
   const onUp = () => {
     const d = drag.current;
@@ -90,10 +87,8 @@ export function FloorPlan({ initial, locationId, locationName }: { initial: Tabl
     window.removeEventListener("pointerup", onUp);
     drag.current = null;
     if (!d) return;
-    const t = tablesRef.current.find((x) => x.id === d.id);
-    if (d.moved && t) {
-      const nx = snap(t.x), ny = snap(t.y);
-      patch(d.id, { x: nx, y: ny });
+    if (d.moved) {
+      patch(d.id, { x: snap(d.lastX), y: snap(d.lastY) });
     } else {
       // a tap (no movement) selects for editing
       setSelId(d.id);
@@ -102,7 +97,7 @@ export function FloorPlan({ initial, locationId, locationName }: { initial: Tabl
   const startDrag = (e: React.PointerEvent, t: Table) => {
     e.preventDefault();
     const { x, y } = toSvg(e.clientX, e.clientY);
-    drag.current = { id: t.id, dx: x - t.x, dy: y - t.y, moved: false };
+    drag.current = { id: t.id, dx: x - t.x, dy: y - t.y, w: t.w, h: t.h, moved: false, lastX: t.x, lastY: t.y };
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
   };
