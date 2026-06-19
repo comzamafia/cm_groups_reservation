@@ -141,7 +141,12 @@
 .fp-leg { display: inline-flex; align-items: center; gap: 7px; font-size: 0.84rem; color: var(--sub); }
 .fp-leg i { width: 13px; height: 13px; border-radius: 3px; display: inline-block; }
 .fp-leg b { color: var(--text); font-variant-numeric: tabular-nums; }
-.fp-leg-hint { margin-left: auto; font-size: 0.78rem; color: var(--sub-dim); }
+.fp-leg-hint { font-size: 0.78rem; color: var(--sub-dim); margin: 0; }
+.fp-tools { margin-left: auto; display: flex; gap: 8px; }
+.fp-mini { padding: 8px 14px; font-size: 0.82rem; }
+.fp-svg.editing .fp-table { cursor: grab; }
+.fp-svg.editing .fp-table:active { cursor: grabbing; }
+.fp-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .fp-canvas { background: #0c0b0a; border: 1px solid var(--line); border-radius: 12px; padding: 14px; overflow-x: auto; }
 .fp-svg { width: 100%; min-width: 640px; height: auto; display: block; }
 .fp-room { fill: #100e0c; stroke: var(--line); stroke-width: 1.5; }

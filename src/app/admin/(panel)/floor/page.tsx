@@ -33,7 +33,7 @@ export default async function FloorPage() {
           </p>
         </div>
       ) : (
-        <FloorPlan initial={tables as Table[]} locationName={loc?.name ?? "Mississauga"} />
+        <FloorPlan initial={tables as Table[]} locationId={loc?.id ?? ""} locationName={loc?.name ?? "Mississauga"} />
       )}
     </>
   );
