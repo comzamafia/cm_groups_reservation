@@ -8,6 +8,7 @@ const LINKS = [
   { href: "/admin", label: "Dashboard", icon: "LayoutDashboard" },
   { href: "/admin/leads", label: "Leads", icon: "Inbox" },
   { href: "/admin/reservations", label: "Reservations", icon: "CalendarDays" },
+  { href: "/admin/floor", label: "Floor Plan", icon: "Map" },
   { href: "/admin/zones", label: "Zones", icon: "LayoutGrid" },
   { href: "/admin/pricing", label: "Pricing", icon: "Tag" },
   { href: "/admin/content", label: "Content", icon: "PencilLine" },

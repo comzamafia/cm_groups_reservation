@@ -135,6 +135,36 @@
 .resv-tel { display: inline-flex; align-items: center; gap: 5px; color: var(--gold-lite); font-size: 0.82rem; font-weight: 600; }
 .resv-tel:hover { text-decoration: underline; }
 
+/* ── Floor plan ── */
+.fp-wrap { display: grid; gap: 14px; }
+.fp-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 12px 16px; background: var(--card-2); border: 1px solid var(--line); border-radius: 10px; }
+.fp-leg { display: inline-flex; align-items: center; gap: 7px; font-size: 0.84rem; color: var(--sub); }
+.fp-leg i { width: 13px; height: 13px; border-radius: 3px; display: inline-block; }
+.fp-leg b { color: var(--text); font-variant-numeric: tabular-nums; }
+.fp-leg-hint { margin-left: auto; font-size: 0.78rem; color: var(--sub-dim); }
+.fp-canvas { background: #0c0b0a; border: 1px solid var(--line); border-radius: 12px; padding: 14px; overflow-x: auto; }
+.fp-svg { width: 100%; min-width: 640px; height: auto; display: block; }
+.fp-room { fill: #100e0c; stroke: var(--line); stroke-width: 1.5; }
+.fp-label { fill: var(--sub-dim); font-family: var(--font-sans), sans-serif; }
+.fp-brand { font-family: var(--font-serif), Georgia, serif; font-size: 22px; letter-spacing: 2px; fill: #6b5a3a; }
+.fp-bar { font-size: 20px; font-weight: 700; letter-spacing: 4px; fill: var(--sub); }
+.fp-edge { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; }
+.fp-table text { pointer-events: none; user-select: none; font-weight: 700; font-family: var(--font-sans), sans-serif; }
+.fp-table:hover { filter: brightness(1.18); }
+
+.fp-picker-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.55); display: grid; place-items: center; padding: 20px; }
+.fp-picker { width: 100%; max-width: 380px; background: var(--card-2); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: grid; gap: 14px; box-shadow: 0 40px 90px -40px rgba(0,0,0,.95); }
+.fp-picker-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.fp-picker-head strong { font-family: var(--font-serif), Georgia, serif; font-size: 1.25rem; color: var(--text); }
+.fp-picker-head .muted { font-size: 0.8rem; text-transform: capitalize; }
+.fp-status-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fp-status-btn { background: transparent; border: 1.5px solid; border-radius: 8px; padding: 11px; font-weight: 600; font-size: 0.86rem; transition: background .15s; }
+.fp-status-btn:hover { background: rgba(255,255,255,.05); }
+.fp-status-btn.on { background: rgba(255,255,255,.1); box-shadow: inset 0 0 0 1px currentColor; }
+.fp-note { display: grid; gap: 6px; }
+.fp-note input { background: #141210; border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; color: var(--text); font-size: 0.9rem; }
+.fp-note input:focus { outline: none; border-color: var(--gold-lite); }
+
 /* Danger / delete button */
 .btn-danger {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
