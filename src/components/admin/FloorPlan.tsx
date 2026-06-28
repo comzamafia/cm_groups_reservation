@@ -34,6 +34,7 @@ export function FloorPlan({ initial, locationId, locationName }: { initial: Tabl
   const [noteDraft, setNoteDraft] = useState("");
   const [edit, setEdit] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [view, setView] = useState<"main" | "bar">("main");
 
   const svgRef = useRef<SVGSVGElement>(null);
   const drag = useRef<{ id: string; dx: number; dy: number; w: number; h: number; moved: boolean; lastX: number; lastY: number } | null>(null);
@@ -58,6 +59,10 @@ export function FloorPlan({ initial, locationId, locationName }: { initial: Tabl
   }, [supabase]);
 
   const selected = tables.find((t) => t.id === selId) ?? null;
+  const visible = useMemo(
+    () => tables.filter((t) => (view === "bar" ? t.section === "bar" : t.section !== "bar")),
+    [tables, view],
+  );
 
   const patch = async (id: string, p: Partial<Table>) => {
     setTables((prev) => prev.map((t) => (t.id === id ? { ...t, ...p } : t)));
@@ -124,12 +129,16 @@ export function FloorPlan({ initial, locationId, locationName }: { initial: Tabl
 
   const counts = useMemo(() => {
     const c = { available: 0, reserved: 0, occupied: 0, blocked: 0 } as Record<Status, number>;
-    for (const t of tables) c[(t.status as Status) in c ? (t.status as Status) : "available"]++;
+    for (const t of visible) c[(t.status as Status) in c ? (t.status as Status) : "available"]++;
     return c;
-  }, [tables]);
+  }, [visible]);
 
   return (
     <div className="fp-wrap">
+      <div className="fp-tabs">
+        <button type="button" className={view === "main" ? "on" : ""} onClick={() => { setView("main"); setSelId(null); }}>Main</button>
+        <button type="button" className={view === "bar" ? "on" : ""} onClick={() => { setView("bar"); setSelId(null); }}>Bar</button>
+      </div>
       <div className="fp-legend">
         {ORDER.map((s) => (
           <span className="fp-leg" key={s}>
@@ -159,12 +168,21 @@ export function FloorPlan({ initial, locationId, locationName }: { initial: Tabl
           <rect x="6" y="6" width="988" height="628" rx="10" className="fp-room" />
           {edit && <rect x="6" y="6" width="988" height="628" rx="10" fill="url(#fpgrid)" />}
 
-          <text x="592" y="150" className="fp-label fp-brand" textAnchor="middle">CHIANG MAI</text>
-          <text x="592" y="205" className="fp-label fp-bar" textAnchor="middle">BAR</text>
-          <text x="978" y="400" className="fp-label fp-edge" textAnchor="middle" transform="rotate(90 978 400)">ENTRANCE</text>
-          <text x="26" y="470" className="fp-label fp-edge" textAnchor="middle" transform="rotate(-90 26 470)">washrooms</text>
+          {view === "main" ? (
+            <>
+              <text x="592" y="150" className="fp-label fp-brand" textAnchor="middle">CHIANG MAI</text>
+              <text x="592" y="205" className="fp-label fp-bar" textAnchor="middle">BAR</text>
+              <text x="978" y="400" className="fp-label fp-edge" textAnchor="middle" transform="rotate(90 978 400)">ENTRANCE</text>
+              <text x="26" y="470" className="fp-label fp-edge" textAnchor="middle" transform="rotate(-90 26 470)">washrooms</text>
+            </>
+          ) : (
+            <>
+              <rect x="300" y="130" width="400" height="72" rx="36" className="fp-bar-counter" />
+              <text x="500" y="173" className="fp-label fp-bar" textAnchor="middle">BAR</text>
+            </>
+          )}
 
-          {tables.map((t) => {
+          {visible.map((t) => {
             const st = STATUS[(t.status as Status) in STATUS ? (t.status as Status) : "available"];
             const isSel = t.id === selId;
             const cx = t.x + t.w / 2, cy = t.y + t.h / 2;
@@ -187,7 +205,7 @@ export function FloorPlan({ initial, locationId, locationName }: { initial: Tabl
       </div>
 
       {/* Add-table form */}
-      {adding && <AddForm onCancel={() => setAdding(false)} onAdd={addTable} />}
+      {adding && <AddForm defaultSection={view === "bar" ? "bar" : "main"} onCancel={() => setAdding(false)} onAdd={addTable} />}
 
       {/* Status picker (normal) or properties editor (edit mode) */}
       {selected && !adding && (
@@ -247,11 +265,11 @@ export function FloorPlan({ initial, locationId, locationName }: { initial: Tabl
   );
 }
 
-function AddForm({ onCancel, onAdd }: { onCancel: () => void; onAdd: (code: string, shape: "rect" | "circle", section: string, seats: number) => void }) {
+function AddForm({ defaultSection, onCancel, onAdd }: { defaultSection: string; onCancel: () => void; onAdd: (code: string, shape: "rect" | "circle", section: string, seats: number) => void }) {
   const [code, setCode] = useState("");
-  const [shape, setShape] = useState<"rect" | "circle">("rect");
-  const [section, setSection] = useState("main");
-  const [seats, setSeats] = useState(4);
+  const [shape, setShape] = useState<"rect" | "circle">(defaultSection === "bar" ? "circle" : "rect");
+  const [section, setSection] = useState(defaultSection);
+  const [seats, setSeats] = useState(defaultSection === "bar" ? 1 : 4);
   return (
     <div className="fp-picker-overlay" onClick={onCancel}>
       <form className="fp-picker" onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); if (code.trim()) onAdd(code.trim(), shape, section.trim() || "main", seats); }}>
