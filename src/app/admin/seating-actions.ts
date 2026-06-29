@@ -39,7 +39,6 @@ export async function getTableOptions(reservationId: string): Promise<{
   const { data: tables } = await admin
     .from("restaurant_tables")
     .select("id, code, section, seats, sort")
-    .eq("active", true)
     .eq("location_id", resv.location_id)
     .order("sort");
 
