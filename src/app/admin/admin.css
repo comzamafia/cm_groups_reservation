@@ -175,6 +175,19 @@
 .fp-note input { background: #141210; border: 1px solid var(--line); border-radius: 8px; padding: 11px 12px; color: var(--text); font-size: 0.9rem; }
 .fp-note input:focus { outline: none; border-color: var(--gold-lite); }
 
+/* Table assignment (seating) */
+.assign-btn { background: transparent; border: 1px solid var(--line); border-radius: 6px; color: var(--gold-lite); font-size: 0.8rem; font-weight: 600; padding: 6px 10px; cursor: pointer; white-space: nowrap; }
+.assign-btn:hover { border-color: var(--gold-lite); }
+.assign-empty { display: inline-flex; align-items: center; gap: 4px; color: var(--sub); }
+.assign-sections { display: grid; gap: 14px; max-height: 52vh; overflow-y: auto; }
+.assign-section-name { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sub-dim); margin-bottom: 7px; font-weight: 600; text-transform: capitalize; }
+.assign-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+.assign-chip { background: #141210; border: 1px solid var(--line); border-radius: 6px; color: var(--text); padding: 8px 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+.assign-chip small { color: var(--sub-dim); font-weight: 400; }
+.assign-chip:hover:not(:disabled) { border-color: var(--gold-lite); }
+.assign-chip.on { background: rgba(63,174,115,.16); border-color: #3fae73; color: #cdeede; }
+.assign-chip.taken { opacity: .4; cursor: not-allowed; text-decoration: line-through; }
+
 /* Danger / delete button */
 .btn-danger {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;

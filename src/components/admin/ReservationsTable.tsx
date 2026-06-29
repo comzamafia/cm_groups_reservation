@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Icon } from "@/components/events/Icon";
 import { StatusSelect } from "@/components/admin/StatusSelect";
 import { ReservationModal, type EditableReservation } from "@/components/admin/ReservationModal";
+import { AssignTablesButton } from "@/components/admin/AssignTablesButton";
 
 export type ResvRow = {
   id: string;
@@ -18,6 +19,7 @@ export type ResvRow = {
   status: string;
   total_min_spend: number | null;
   notes: string | null;
+  assigned: string[];
 };
 
 export function ReservationsTable({
@@ -64,6 +66,7 @@ export function ReservationsTable({
               <th>Party</th>
               <th>Space</th>
               <th>Min&nbsp;spend</th>
+              <th>Seating</th>
               <th>Notes</th>
               <th>Status</th>
               <th></th>
@@ -71,7 +74,7 @@ export function ReservationsTable({
           </thead>
           <tbody>
             {rows.length === 0 && (
-              <tr><td colSpan={8} className="tbl-empty">No reservations in {month}. Click “New reservation” to add one.</td></tr>
+              <tr><td colSpan={9} className="tbl-empty">No reservations in {month}. Click “New reservation” to add one.</td></tr>
             )}
             {rows.map((r) => (
               <tr key={r.id}>
@@ -93,6 +96,9 @@ export function ReservationsTable({
                 <td className="muted" data-label="Space">{r.space_name ?? "—"}</td>
                 <td data-label="Min spend" style={{ color: "var(--gold-lite)", fontWeight: 600 }}>
                   {r.total_min_spend ? `$${Number(r.total_min_spend).toLocaleString()}` : "—"}
+                </td>
+                <td data-label="Seating">
+                  <AssignTablesButton reservationId={r.id} assigned={r.assigned} partySize={r.party_size} />
                 </td>
                 <td className="muted" data-label="Notes" style={{ maxWidth: 220, fontSize: "0.8rem", whiteSpace: "pre-wrap" }}>
                   {r.notes ?? "—"}

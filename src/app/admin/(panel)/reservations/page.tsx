@@ -71,6 +71,20 @@ export default async function ReservationsPage({
   const spaces = spacesRes.data ?? [];
   const raw = (resvRes.data ?? []) as unknown as RawRow[];
 
+  // Tables assigned to each booking (V2 seating).
+  const resIds = raw.map((r) => r.id);
+  const { data: assignRows } = resIds.length
+    ? await supabase.from("reservation_tables").select("reservation_id, restaurant_tables(code)").in("reservation_id", resIds)
+    : { data: [] as { reservation_id: string; restaurant_tables: { code: string } | null }[] };
+  const assignedMap = new Map<string, string[]>();
+  for (const a of assignRows ?? []) {
+    const code = (a.restaurant_tables as unknown as { code: string } | null)?.code;
+    if (!code) continue;
+    const arr = assignedMap.get(a.reservation_id) ?? [];
+    arr.push(code);
+    assignedMap.set(a.reservation_id, arr);
+  }
+
   const rows: ResvRow[] = raw.map((r) => ({
     id: r.id,
     guest_name: r.guest_name,
@@ -84,6 +98,7 @@ export default async function ReservationsPage({
     status: r.status,
     total_min_spend: r.total_min_spend,
     notes: r.notes,
+    assigned: (assignedMap.get(r.id) ?? []).sort(),
   }));
 
   const events: CalEvent[] = rows.map((r) => ({
